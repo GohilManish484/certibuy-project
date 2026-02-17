@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Addresses - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="cb-page">
+    <div class="cb-container">
+        <div class="cb-page-header">
+            <div>
+                <h1>Saved Addresses</h1>
+                <p>Manage your delivery addresses and default location.</p>
+            </div>
+            <a href="{% url 'accounts:address_add' %}" class="cb-btn cb-btn-primary">
+                <i class="fas fa-plus"></i> Add Address
+            </a>
+        </div>
+
+        <div class="cb-grid">
+            {% for address in addresses %}
+            <div class="cb-card">
+                <div class="cb-card-header">
+                    <div>
+                        <h3>{{ address.full_name }}</h3>
+                        <p>{{ address.phone }}</p>
+                    </div>
+                    {% if address.is_default %}
+                    <span class="status-badge status-default">Default</span>
+                    {% endif %}
+                </div>
+                <p class="cb-muted">{{ address.address_line1 }}{% if address.address_line2 %}, {{ address.address_line2 }}{% endif %}</p>
+                <p class="cb-muted">{{ address.city }}, {{ address.state }} - {{ address.pincode }}</p>
+                {% if address.landmark %}
+                <p class="cb-muted">Landmark: {{ address.landmark }}</p>
+                {% endif %}
+                <div class="cb-card-actions">
+                    <a href="{% url 'accounts:address_edit' address.id %}" class="cb-btn cb-btn-ghost">Edit</a>
+                    {% if not address.is_default %}
+                    <form method="post" action="{% url 'accounts:address_default' address.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="cb-btn cb-btn-outline">Set Default</button>
+                    </form>
+                    {% endif %}
+                    <form method="post" action="{% url 'accounts:address_delete' address.id %}" onsubmit="return confirm('Remove this address?');">
+                        {% csrf_token %}
+                        <button type="submit" class="cb-btn cb-btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="cb-empty">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>No addresses saved yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

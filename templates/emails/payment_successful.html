@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .success-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .payment-details {
+            background-color: #f0fdf4;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #10b981;
+        }
+        .amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #059669;
+            margin: 15px 0;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="success-icon">✓</div>
+            <h1>Payment Successful!</h1>
+        </div>
+        
+        <p>Hi <strong>{{ user.username }}</strong>,</p>
+        
+        <p>Your payment has been successfully processed. Your order is now confirmed and will be processed shortly.</p>
+        
+        <div class="payment-details">
+            <div class="amount">₹{{ order.total_amount }}</div>
+            
+            <div class="info-row">
+                <span><strong>Order Number:</strong></span>
+                <span>{{ order.order_number }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Payment ID:</strong></span>
+                <span>{{ order.razorpay_payment_id|default:"Processing" }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Payment Date:</strong></span>
+                <span>{{ order.updated_at|date:"F d, Y H:i" }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Payment Method:</strong></span>
+                <span>{{ order.payment_method|default:"Online Payment" }}</span>
+            </div>
+        </div>
+        
+        <p><strong>What's Next?</strong></p>
+        <ul>
+            <li>Your order is being prepared for shipment</li>
+            <li>You'll receive a shipping notification with tracking details</li>
+            <li>Track your order status in your account</li>
+        </ul>
+        
+        <div class="footer">
+            <p>Thank you for shopping with {{ site_name }}!</p>
+            <p>For any queries, contact us at <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+        </div>
+    </div>
+</body>
+</html>

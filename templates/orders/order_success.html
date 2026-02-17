@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Order Success - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 5rem; padding-bottom: 3rem;">
+    <div class="container-premium" style="max-width: 800px; text-align: center;">
+        
+        <div class="auth-card">
+            <div style="width: 100px; height: 100px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;">
+                <i class="fas fa-check-circle" style="color: #22c55e; font-size: 3rem;"></i>
+            </div>
+            
+            <h1 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 2rem;">
+                Order Placed Successfully!
+            </h1>
+            
+            <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem;">
+                Thank you for your order. Your order has been received and is being processed.
+            </p>
+            
+            <div style="background: rgba(37, 99, 235, 0.1); border: 1px solid var(--accent-blue); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <p style="color: var(--text-secondary); margin: 0;">Order Number:</p>
+                    <p style="color: var(--text-primary); font-weight: 600; font-size: 1.2rem; margin: 0;">#{{ order.id }}</p>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <p style="color: var(--text-secondary); margin: 0;">Total Amount:</p>
+                    <p style="color: var(--accent-blue); font-weight: bold; font-size: 1.3rem; margin: 0;">${{ order.total_amount }}</p>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <p style="color: var(--text-secondary); margin: 0;">Status:</p>
+                    <p style="color: #22c55e; font-weight: 600; margin: 0; text-transform: capitalize;">{{ order.status }}</p>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <p style="color: var(--text-secondary); margin: 0;">Order Date:</p>
+                    <p style="color: var(--text-primary); margin: 0;">{{ order.created_at|date:"F d, Y" }}</p>
+                </div>
+            </div>
+            
+            <h3 style="color: var(--text-primary); margin-bottom: 1rem; text-align: left;">
+                <i class="fas fa-box"></i> Order Items
+            </h3>
+            
+            <div style="text-align: left; margin-bottom: 2rem;">
+                {% for item in order.items.all %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(30, 41, 59, 0.5); border-radius: 8px; margin-bottom: 0.5rem;">
+                    <div>
+                        <p style="color: var(--text-primary); font-weight: 600; margin: 0 0 0.25rem 0;">{{ item.product.name }}</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0;">Quantity: {{ item.quantity }}</p>
+                    </div>
+                    <p style="color: var(--accent-blue); font-weight: bold; margin: 0;">${{ item.get_total_price }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <a href="{% url 'core:shop' %}" class="btn-secondary-custom" style="flex: 1; text-align: center; padding: 1rem; border-radius: 10px; text-decoration: none;">
+                    <i class="fas fa-shopping-cart"></i>&nbsp; Continue Shopping
+                </a>
+                <a href="{% url 'core:customer-dashboard' %}" class="btn-primary-custom" style="flex: 1; text-align: center; padding: 1rem; border-radius: 10px; text-decoration: none;">
+                    <i class="fas fa-tachometer-alt"></i>&nbsp; View Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

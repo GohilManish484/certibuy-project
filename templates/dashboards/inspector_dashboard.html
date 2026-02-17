@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Inspector Dashboard - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 5rem; padding-bottom: 3rem;">
+    <div class="container-premium" style="max-width: 1200px;">
+        
+        <!-- Header -->
+        <div style="margin-bottom: 3rem;">
+            <h1 style="color: var(--text-primary); margin-bottom: 0.5rem;">
+                <i class="fas fa-clipboard-check"></i> Inspector Dashboard
+            </h1>
+            <p style="color: var(--text-secondary); margin: 0;">Manage your assigned inspections</p>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            
+            <!-- Total Inspections -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--accent-blue); margin-bottom: 0.5rem;">
+                    {{ total_inspections }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-tasks"></i> Total Inspections
+                </p>
+            </div>
+            
+            <!-- Pending -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--light-blue); margin-bottom: 0.5rem;">
+                    {{ pending_inspections }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-hourglass-start"></i> Pending
+                </p>
+            </div>
+            
+            <!-- Completed -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #10b981; margin-bottom: 0.5rem;">
+                    {{ completed_inspections }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-check-double"></i> Completed
+                </p>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            
+            <!-- Assigned Inspections -->
+            <div class="auth-card">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    <i class="fas fa-list-check"></i> Assigned Inspections
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Manage all your assigned inspections
+                </p>
+                <a href="{% url 'inspections:list' %}" class="btn-primary-custom" style="display: block; text-align: center; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-right"></i> View Inspections
+                </a>
+            </div>
+            
+            <!-- Profile -->
+            <div class="auth-card">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    <i class="fas fa-user-cog"></i> Account Settings
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Manage your inspector profile
+                </p>
+                <a href="{% url 'accounts:profile' %}" class="btn-secondary-custom" style="display: block; text-align: center; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-right"></i> Settings
+                </a>
+            </div>
+        </div>
+        
+        <!-- Recent Inspections -->
+        {% if recent_inspections %}
+        <div class="auth-card">
+            <h2 style="color: var(--text-primary); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+                <i class="fas fa-history"></i> Recent Inspections
+            </h2>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border-color);">
+                            <th style="text-align: left; padding: 1rem; color: var(--text-secondary); font-weight: 600;">Product</th>
+                            <th style="text-align: left; padding: 1rem; color: var(--text-secondary); font-weight: 600;">Status</th>
+                            <th style="text-align: left; padding: 1rem; color: var(--text-secondary); font-weight: 600;">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inspection in recent_inspections %}
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 1rem; color: var(--text-primary);">
+                                {% if inspection.submission.product %}
+                                    {{ inspection.submission.product.name }}
+                                {% else %}
+                                    {{ inspection.submission.name }}
+                                {% endif %}
+                            </td>
+                            <td style="padding: 1rem;">
+                                {% if inspection.status == 'completed' %}
+                                <span style="display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize; background: rgba(16, 185, 129, 0.2); color: #10b981;">
+                                    {{ inspection.get_status_display }}
+                                </span>
+                                {% elif inspection.status == 'pending' %}
+                                <span style="display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize; background: rgba(100, 200, 255, 0.2); color: var(--light-blue);">
+                                    {{ inspection.get_status_display }}
+                                </span>
+                                {% else %}
+                                <span style="display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize; background: rgba(239, 68, 68, 0.2); color: var(--danger);">
+                                    {{ inspection.get_status_display }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 1rem; color: var(--text-secondary); font-size: 0.9rem;">{{ inspection.created_at|date:'M d, Y' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

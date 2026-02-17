@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Register - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="auth-container">
+    <div class="container-premium" style="max-width: 650px;">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">
+                    <i class="fas fa-user-plus" style="color: var(--accent-blue);"></i>
+                </div>
+                <h1 class="auth-title">Create Account</h1>
+                <p class="auth-subtitle">Join CertiBuy marketplace today</p>
+            </div>
+            
+            {% if messages %}
+            <div style="margin-bottom: 1.5rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i> Username *
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <span class="form-error">{{ form.username.errors }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i> First Name *
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                        <span class="form-error">{{ form.first_name.errors }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i> Last Name *
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                        <span class="form-error">{{ form.last_name.errors }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i> Email *
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    <span class="form-error">{{ form.email.errors }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user-tag"></i> Account Type *
+                    </label>
+                    {{ form.role }}
+                    {% if form.role.errors %}
+                    <span class="form-error">{{ form.role.errors }}</span>
+                    {% endif %}
+                    <span class="form-text">
+                        <i class="fas fa-info-circle"></i> Choose Customer to buy, or Seller to sell products
+                    </span>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> Password *
+                        </label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                        <span class="form-error">{{ form.password1.errors }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> Confirm Password *
+                        </label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                        <span class="form-error">{{ form.password2.errors }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+                
+                <button type="submit" class="btn-auth">
+                    <i class="fas fa-user-plus"></i> Create My Account
+                </button>
+                
+                <p class="auth-footer-text">
+                    Already have an account? <a href="{% url 'accounts:login' %}">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

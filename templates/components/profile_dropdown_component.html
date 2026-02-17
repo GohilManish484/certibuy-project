@@ -1,0 +1,29 @@
+<div class="cb-dropdown cb-profile-menu" data-menu="profile">
+    <div class="cb-profile-header">
+        <div class="cb-avatar">
+            {% if user.profile_photo %}
+            <img src="{{ user.profile_photo.url }}" alt="{{ user.username }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            {% else %}
+            <i class="fas fa-user"></i>
+            {% endif %}
+        </div>
+        <div>
+            <div class="cb-profile-name">{{ user.get_full_name|default:user.username }}</div>
+            <div class="cb-profile-meta">{{ user.email }}</div>
+        </div>
+    </div>
+    <div class="cb-profile-links">
+        <a href="{% url 'core:customer-dashboard' %}"><i class="fas fa-tachometer-alt"></i> My Dashboard</a>
+        <a href="{% url 'core:customer-dashboard' %}#orders"><i class="fas fa-receipt"></i> My Orders</a>
+        <a href="{% url 'core:customer-dashboard' %}#orders"><i class="fas fa-route"></i> Track Orders</a>
+        <a href="{% url 'accounts:wishlist' %}"><i class="fas fa-heart"></i> Wishlist</a>
+        <a href="{% url 'accounts:addresses' %}"><i class="fas fa-map-marker-alt"></i> Saved Addresses</a>
+        <a href="{% url 'accounts:password_change' %}"><i class="fas fa-lock"></i> Account Settings</a>
+    </div>
+    <div class="cb-profile-footer">
+        <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="cb-btn cb-btn-primary cb-btn-block">Logout</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+
+{% block title %}CertiBuy - Buy & Sell Certified Products{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-premium">
+    <div class="hero-content">
+        <div class="certification-badge" style="margin-bottom: 1.5rem; font-size: 1rem;">
+            <i class="fas fa-certificate"></i>
+            <span>100% Certified Products</span>
+        </div>
+        <h1 class="fade-in-up">Buy & Sell Certified Products with Confidence</h1>
+        <p class="fade-in-up" style="font-weight: 600; letter-spacing: 0.2px;">Certified, Tested, Trusted — Selling Second-Hand Products</p>
+        <p class="fade-in-up" style="margin-top: 0.75rem;">Join thousands of users trusting CertiBuy's professional inspection and certification service</p>
+        
+        <!-- Trust Indicators -->
+        <div class="trust-indicators" style="justify-content: center; margin: 2rem auto;">
+            <div class="trust-icon">
+                <i class="fas fa-shield-check"></i>
+                <span>Verified Sellers</span>
+            </div>
+            <div class="trust-icon">
+                <i class="fas fa-certificate"></i>
+                <span>Professional Inspection</span>
+            </div>
+            <div class="trust-icon">
+                <i class="fas fa-lock"></i>
+                <span>Secure Transactions</span>
+            </div>
+        </div>
+        
+        <div class="hero-cta">
+            {% if user.is_authenticated %}
+                {% if user.role == 'customer' %}
+                    <a href="{% url 'core:shop' %}" class="btn-primary-custom">Browse Products</a>
+                    <a href="{% url 'core:customer-dashboard' %}" class="btn-secondary-custom">My Dashboard</a>
+                {% elif user.role == 'seller' %}
+                    <a href="{% url 'sellers:submit_product' %}" class="btn-primary-custom">Submit Product</a>
+                    <a href="{% url 'core:seller-dashboard' %}" class="btn-secondary-custom">My Dashboard</a>
+                {% elif user.role == 'inspector' %}
+                    <a href="{% url 'inspections:list' %}" class="btn-primary-custom">My Inspections</a>
+                    <a href="{% url 'core:inspector-dashboard' %}" class="btn-secondary-custom">Dashboard</a>
+                {% elif user.is_staff or user.is_superuser %}
+                    <a href="{% url 'core:admin-dashboard' %}" class="btn-primary-custom">Admin Dashboard</a>
+                    <a href="/admin/" class="btn-secondary-custom">Django Admin</a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'accounts:register' %}" class="btn-primary-custom">Get Started</a>
+                <a href="{% url 'core:shop' %}" class="btn-secondary-custom">Browse Products</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="section-premium" style="padding: 3rem 0;">
+    <div class="container-premium">
+        <div class="search-bar-premium">
+            <input type="text" placeholder="Search products, brands, categories...">
+            <button><i class="fas fa-search"></i> Search</button>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="section-premium">
+    <div class="container-premium">
+        <h2 class="section-title-premium">Browse by Category</h2>
+        <p class="section-subtitle-premium">Explore certified electronics only</p>
+        <div class="category-grid-premium">
+            <a href="#" class="category-card-premium">
+                <i class="fas fa-laptop"></i>
+                <p>Laptops</p>
+            </a>
+            <a href="#" class="category-card-premium">
+                <i class="fas fa-mobile-alt"></i>
+                <p>Mobiles</p>
+            </a>
+            <a href="#" class="category-card-premium">
+                <i class="fas fa-headphones"></i>
+                <p>Headphones</p>
+            </a>
+            <a href="#" class="category-card-premium">
+                <i class="fas fa-broadcast-tower"></i>
+                <p>Earbuds</p>
+            </a>
+            <a href="#" class="category-card-premium">
+                <i class="fas fa-tv"></i>
+                <p>TV</p>
+            </a>
+            <a href="#" class="category-card-premium">
+                <i class="fas fa-fan"></i>
+                <p>AC</p>
+            </a>
+            <a href="#" class="category-card-premium">
+                <i class="fas fa-soap"></i>
+                <p>Washing Machines</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section-premium">
+    <div class="container-premium">
+        <h2 class="section-title-premium">Latest Certified Products</h2>
+        <p class="section-subtitle-premium">Explore our newest professionally inspected and certified items</p>
+        <div class="product-grid-premium">
+            <div class="product-card-premium">
+                <div class="product-image-premium"><i class="fas fa-laptop"></i></div>
+                <div class="product-body-premium">
+                    <div class="product-name-premium">MacBook Pro 16" M2</div>
+                    <div class="product-price-premium">$1,899</div>
+                    <div class="product-location-premium">
+                        <i class="fas fa-map-marker-alt"></i> San Francisco, CA
+                    </div>
+                    <div class="product-badges">
+                        <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                        <span class="badge-condition-new">Like New</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card-premium">
+                <div class="product-image-premium"><i class="fas fa-mobile-alt"></i></div>
+                <div class="product-body-premium">
+                    <div class="product-name-premium">iPhone 14 Pro 256GB</div>
+                    <div class="product-price-premium">$899</div>
+                    <div class="product-location-premium">
+                        <i class="fas fa-map-marker-alt"></i> New York, NY
+                    </div>
+                    <div class="product-badges">
+                        <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                        <span class="badge-condition-excellent">Excellent</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card-premium">
+                <div class="product-image-premium"><i class="fas fa-headphones"></i></div>
+                <div class="product-body-premium">
+                    <div class="product-name-premium">Sony WH-1000XM5</div>
+                    <div class="product-price-premium">$279</div>
+                    <div class="product-location-premium">
+                        <i class="fas fa-map-marker-alt"></i> Chicago, IL
+                    </div>
+                    <div class="product-badges">
+                        <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                        <span class="badge-condition-good">Good</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card-premium">
+                <div class="product-image-premium"><i class="fas fa-tv"></i></div>
+                <div class="product-body-premium">
+                    <div class="product-name-premium">Samsung 55" QLED 4K TV</div>
+                    <div class="product-price-premium">$799</div>
+                    <div class="product-location-premium">
+                        <i class="fas fa-map-marker-alt"></i> Seattle, WA
+                    </div>
+                    <div class="product-badges">
+                        <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                        <span class="badge-condition-excellent">Excellent</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card-premium">
+                <div class="product-image-premium"><i class="fas fa-gamepad"></i></div>
+                <div class="product-body-premium">
+                    <div class="product-name-premium">PlayStation 5 Disc Edition</div>
+                    <div class="product-price-premium">$429</div>
+                    <div class="product-location-premium">
+                        <i class="fas fa-map-marker-alt"></i> Austin, TX
+                    </div>
+                    <div class="product-badges">
+                        <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                        <span class="badge-condition-excellent">Excellent</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card-premium">
+                <div class="product-image-premium"><i class="fas fa-camera"></i></div>
+                <div class="product-body-premium">
+                    <div class="product-name-premium">DJI Mini 4 Pro Drone</div>
+                    <div class="product-price-premium">$699</div>
+                    <div class="product-location-premium">
+                        <i class="fas fa-map-marker-alt"></i> Los Angeles, CA
+                    </div>
+                    <div class="product-badges">
+                        <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                        <span class="badge-condition-new">Like New</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card-premium">
+                <div class="product-image-premium"><i class="fas fa-tablet-alt"></i></div>
+                <div class="product-body-premium">
+                    <div class="product-name-premium">iPad Air 10.9" 256GB</div>
+                    <div class="product-price-premium">$549</div>
+                    <div class="product-location-premium">
+                        <i class="fas fa-map-marker-alt"></i> Denver, CO
+                    </div>
+                    <div class="product-badges">
+                        <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                        <span class="badge-condition-excellent">Excellent</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card-premium">
+                <div class="product-image-premium"><i class="fas fa-blender"></i></div>
+                <div class="product-body-premium">
+                    <div class="product-name-premium">Dyson V11 Cordless Vacuum</div>
+                    <div class="product-price-premium">$329</div>
+                    <div class="product-location-premium">
+                        <i class="fas fa-map-marker-alt"></i> Phoenix, AZ
+                    </div>
+                    <div class="product-badges">
+                        <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                        <span class="badge-condition-good">Good</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section-premium" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);">
+    <div class="container-premium">
+        <h2 class="section-title-premium">Why Choose CertiBuy?</h2>
+        <p class="section-subtitle-premium">Trusted marketplace with guaranteed quality and security</p>
+        <div class="feature-grid-premium">
+            <div class="feature-card-premium">
+                <div class="feature-icon-premium" style="animation: pulse 2s ease-in-out infinite;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>100% Certified</h4>
+                <p>Every product goes through rigorous inspection by certified professionals before listing.</p>
+            </div>
+            <div class="feature-card-premium">
+                <div class="feature-icon-premium" style="animation: pulse 2s ease-in-out infinite; animation-delay: 0.2s;">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h4>Secure Transactions</h4>
+                <p>Your payments and personal information are protected with bank-level encryption.</p>
+            </div>
+            <div class="feature-card-premium">
+                <div class="feature-icon-premium" style="animation: pulse 2s ease-in-out infinite; animation-delay: 0.4s;">
+                    <i class="fas fa-undo"></i>
+                </div>
+                <h4>Easy Returns</h4>
+                <p>30-day money-back guarantee if you're not completely satisfied with your purchase.</p>
+            </div>
+            <div class="feature-card-premium">
+                <div class="feature-icon-premium" style="animation: pulse 2s ease-in-out infinite; animation-delay: 0.6s;">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h4>24/7 Support</h4>
+                <p>Our dedicated customer service team is always ready to assist you with any questions.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Process -->
+<section class="section-premium">
+    <div class="container-premium">
+        <h2 class="section-title-premium">How It Works</h2>
+        <p class="section-subtitle-premium">Simple, secure, and straightforward process</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; position: relative;">
+            <!-- Step 1 -->
+            <div class="glass" style="padding: 2rem; text-align: center; position: relative;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-blue), var(--light-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; font-weight: 800; color: white; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);">
+                    1
+                </div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.3rem;">Browse & Select</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8;">Explore certified products from verified sellers across multiple categories</p>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="glass" style="padding: 2rem; text-align: center; position: relative;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-blue), var(--light-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; font-weight: 800; color: white; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);">
+                    2
+                </div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.3rem;">Secure Checkout</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8;">Complete your purchase with encrypted payment and buyer protection guarantee</p>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="glass" style="padding: 2rem; text-align: center; position: relative;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--accent-blue), var(--light-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; font-weight: 800; color: white; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);">
+                    3
+                </div>
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.3rem;">Receive & Enjoy</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8;">Get your certified product delivered with full inspection report and warranty</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="section-premium" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 6rem 0;">
+    <div class="container-premium">
+        <h2 class="section-title-premium">What Our Users Say</h2>
+        <p class="section-subtitle-premium">Trusted by thousands of buyers and sellers worldwide</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+            <div class="glass" style="padding: 2rem;">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                </div>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">"Amazing marketplace! I sold my luxury watch within 3 days and the inspection process gave buyers confidence. Highly recommended!"</p>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-blue), var(--light-blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white;">JD</div>
+                    <div>
+                        <div style="color: var(--text-primary); font-weight: 600;">John Davis</div>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem;">Verified Seller</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass" style="padding: 2rem;">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                </div>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">"Bought a certified MacBook Pro. The inspection report was detailed and accurate. Product arrived exactly as described. Love it!"</p>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #22c55e); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white;">SM</div>
+                    <div>
+                        <div style="color: var(--text-primary); font-weight: 600;">Sarah Martinez</div>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem;">Happy Customer</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass" style="padding: 2rem;">
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                </div>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">"As an inspector, the platform is easy to use and the payment is always on time. Great way to earn extra income!"</p>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f59e0b, #fbbf24); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white;">MJ</div>
+                    <div>
+                        <div style="color: var(--text-primary); font-weight: 600;">Michael Johnson</div>
+                        <div style="color: var(--text-secondary); font-size: 0.85rem;">Certified Inspector</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="section-premium" style="padding: 4rem 0;">
+    <div class="container-premium">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+            <div class="stat-box-premium">
+                <h3>50K+</h3>
+                <p>Active Users</p>
+            </div>
+            <div class="stat-box-premium">
+                <h3>100K+</h3>
+                <p>Products Sold</p>
+            </div>
+            <div class="stat-box-premium">
+                <h3>98%</h3>
+                <p>Satisfaction Rate</p>
+            </div>
+            <div class="stat-box-premium">
+                <h3>24/7</h3>
+                <p>Customer Support</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admin Portal Section -->
+<section class="admin-portal-section" style="background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); padding: 3rem 0; margin: 3rem 0; border-top: 2px solid #2563eb; border-bottom: 2px solid #2563eb;">
+    <div class="container-premium">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 2rem;">
+            <div>
+                <h3 style="color: #fff; margin: 0 0 0.5rem 0; font-size: 1.5rem;">Admin Portal</h3>
+                <p style="color: #cbd5e0; margin: 0;">Access the management dashboard and admin controls</p>
+            </div>
+            <a href="/admin/" class="btn-admin-portal" style="background: #2563eb; color: white; padding: 0.8rem 2rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; display: inline-block;">
+                <i class="fas fa-lock"></i> Admin Login
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section-premium">
+    <div class="container-premium">
+        <div class="cta-section-premium">
+            <h2>Ready to Start Trading?</h2>
+            <p>Join thousands of buyers and sellers on CertiBuy today</p>
+            <div class="cta-buttons">
+                <a href="{% url 'core:how_it_works' %}" class="btn-cta-white">Learn How It Works</a>
+                <a href="{% url 'core:contact' %}" class="btn-cta-outline">Get Started</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

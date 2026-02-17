@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Return Policy | CertiBuy{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="section-title mb-5 text-center">Return & Refund Policy</h1>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 class="section-title mt-4">Overview</h3>
+            <p>CertiBuy is committed to customer satisfaction. If you're not completely satisfied with your purchase, we offer a straightforward return and refund process within 30 days of delivery.</p>
+
+            <h3 class="section-title mt-5">30-Day Money-Back Guarantee</h3>
+            <p>All purchases made on CertiBuy are covered by our 30-Day Money-Back Guarantee:</p>
+            <ul>
+                <li>You have 30 days from the delivery date to initiate a return</li>
+                <li>Items must be in the same condition as received (unworn, unused where applicable)</li>
+                <li>Return shipping is free for defective items; other returns may require prepaid labels</li>
+                <li>Refunds are processed within 5-7 business days of return receipt</li>
+            </ul>
+
+            <h3 class="section-title mt-5">Reasons for Return</h3>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Legitimate Return Reasons:</h5>
+                    <ul>
+                        <li>Item doesn't match the certification or description</li>
+                        <li>Item arrived damaged or defective</li>
+                        <li>Wrong item was shipped</li>
+                        <li>Significant discrepancy in item condition from photos/description</li>
+                        <li>Item failed to meet promised specifications</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="section-title mt-5">How to Request a Return</h3>
+            <ol>
+                <li><strong>Contact Support:</strong> Email support@certibuy.com or use our return portal within 30 days of delivery</li>
+                <li><strong>Provide Details:</strong> Include your order number, issue description, and photos if applicable</li>
+                <li><strong>Receive Approval:</strong> Our team reviews your request (usually within 24 hours)</li>
+                <li><strong>Ship Back:</strong> Once approved, ship the item using the provided prepaid label</li>
+                <li><strong>Get Refund:</strong> After we receive and inspect the return, your refund is processed</li>
+            </ol>
+
+            <h3 class="section-title mt-5">Refund Methods</h3>
+            <p>Refunds are issued to your original payment method. Processing times:</p>
+            <ul>
+                <li><strong>Credit/Debit Card:</strong> 5-7 business days</li>
+                <li><strong>PayPal:</strong> 2-3 business days</li>
+                <li><strong>Bank Transfer:</strong> 5-10 business days</li>
+                <li><strong>Digital Wallet:</strong> Varies by provider</li>
+            </ul>
+
+            <h3 class="section-title mt-5">Non-Returnable Items</h3>
+            <p>The following items cannot be returned (unless defective):</p>
+            <ul>
+                <li>Items returned outside the 30-day window</li>
+                <li>Items showing signs of use beyond normal inspection</li>
+                <li>Custom or personalized items (unless defective)</li>
+                <li>Items damaged due to negligence during return shipping</li>
+                <li>Clearance or final sale items (clearly marked)</li>
+            </ul>
+
+            <h3 class="section-title mt-5">Exchanges</h3>
+            <p>Don't want a refund? Request an exchange instead! We can:</p>
+            <ul>
+                <li>Ship a replacement or different item</li>
+                <li>Process priority exchanges within 24 hours</li>
+                <li>Upgrade or downgrade items with price adjustments</li>
+            </ul>
+
+            <h3 class="section-title mt-5">Certification & Inspection Disputes</h3>
+            <p>If you believe an item's certification is inaccurate or incomplete, we take this seriously:</p>
+            <ul>
+                <li>Contact us within 14 days of discovery</li>
+                <li>Provide details and evidence of the discrepancy</li>
+                <li>A senior inspector will review your case</li>
+                <li>Full refund or reinspection at no cost</li>
+                <li>Seller may be penalized or removed if negligence is found</li>
+            </ul>
+
+            <h3 class="section-title mt-5">Buyer Protection Guarantee</h3>
+            <p>CertiBuy Buyer Protection covers:</p>
+            <ul>
+                <li>Items that don't match the certification</li>
+                <li>Items significantly different from description/photos</li>
+                <li>Non-delivery or lost shipments</li>
+                <li>Unauthorized transactions</li>
+            </ul>
+            <p><strong>How to file a claim:</strong> Contact support within 30 days with evidence. We'll investigate and issue a full refund if the claim is valid.</p>
+
+            <h3 class="section-title mt-5">FAQ on Returns</h3>
+            <p><strong>Can I return an item after 30 days?</strong><br>
+            No, our return window is strictly 30 days from delivery. However, defective items may qualify for warranty coverage—contact support.</p>
+
+            <p><strong>Do I pay for return shipping?</strong><br>
+            No, we provide prepaid return labels for defective items and certification disputes. For change-of-mind returns, return shipping cost depends on item value and location.</p>
+
+            <p><strong>How long does a refund take?</strong><br>
+            Once we receive your return and confirm it meets our conditions, refunds are processed within 5-7 business days.</p>
+
+            <p><strong>What if the item arrives damaged?</strong><br>
+            Document the damage with photos, contact us immediately, and we'll arrange a replacement or refund right away.</p>
+
+            <h3 class="section-title mt-5">Contact Us</h3>
+            <p>Have questions about our return policy? <a href="{% url 'core:contact' %}" class="text-primary">Contact our support team</a>.</p>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="feature-box sticky-top" style="top: 20px;">
+                <h5>Quick Return Info</h5>
+                <p><strong>Return Window:</strong> 30 days from delivery</p>
+                <p><strong>Refund Processing:</strong> 5-7 business days</p>
+                <p><strong>Return Shipping:</strong> Free for defects</p>
+                <p><strong>No Questions Asked:</strong> Hassle-free process</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

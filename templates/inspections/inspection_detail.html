@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Inspection #{{ inspection.id }} - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 5rem;">
+    <div class="container-premium" style="max-width: 900px;">
+        <div class="auth-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h1 style="color: var(--text-primary); font-size: 2rem;">
+                    <i class="fas fa-clipboard-check" style="color: var(--accent-blue);"></i>
+                    Inspection #{{ inspection.id }}
+                </h1>
+                <span class="badge badge-{{ inspection.status }}" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                    {{ inspection.get_status_display }}
+                </span>
+            </div>
+            
+            <div style="background: rgba(37, 99, 235, 0.1); border-left: 4px solid var(--accent-blue); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">Product: {{ inspection.submission.product_name }}</h3>
+                <p style="color: var(--text-secondary); margin: 0;">Submitted by: {{ inspection.submission.seller.username }}</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div>
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                        <i class="fas fa-user-shield"></i> Inspector Details
+                    </h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                        <strong>Inspector:</strong> {{ inspection.inspector.get_full_name }}
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                        <strong>Username:</strong> {{ inspection.inspector.username }}
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                        <strong>Inspection Date:</strong> {{ inspection.inspection_date|date:"F d, Y g:i A" }}
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                        <i class="fas fa-star"></i> Assessment
+                    </h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                        <strong>Condition Grade:</strong> 
+                        <span class="badge badge-{{ inspection.condition_grade }}">{{ inspection.get_condition_grade_display }}</span>
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                        <strong>Status:</strong> 
+                        <span class="badge badge-{{ inspection.status }}">{{ inspection.get_status_display }}</span>
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
+                        <strong>Created:</strong> {{ inspection.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-file-alt"></i> Inspection Notes
+                </h3>
+                <div style="background: rgba(30, 41, 59, 0.6); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <p style="color: var(--text-primary); line-height: 1.8; white-space: pre-wrap;">{{ inspection.inspection_notes }}</p>
+                </div>
+            </div>
+            
+            {% if inspection.submission.images.all %}
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <i class="fas fa-images"></i> Product Images
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                    {% for img in inspection.submission.images.all %}
+                    <img src="{{ img.image.url }}" alt="Product Image" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);">
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'inspections:list' %}" class="btn-secondary-custom" style="flex: 1; text-align: center; text-decoration: none; padding: 1rem;">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+                {% if user == inspection.inspector %}
+                <a href="{% url 'inspections:update' inspection.id %}" class="btn-primary-custom" style="flex: 1; text-align: center; text-decoration: none; padding: 1rem;">
+                    <i class="fas fa-edit"></i> Update Report
+                </a>
+                {% elif user.is_staff %}
+                <a href="/admin/inspections/inspection/{{ inspection.id }}/change/" class="btn-primary-custom" style="flex: 1; text-align: center; text-decoration: none; padding: 1rem;">
+                    <i class="fas fa-edit"></i> Edit in Admin
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-pending {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+}
+
+.badge-completed {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--light-blue);
+    border: 1px solid var(--light-blue);
+}
+
+.badge-approved {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.badge-rejected {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+.badge-new, .badge-excellent, .badge-good {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.badge-fair {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+}
+</style>
+{% endblock %}

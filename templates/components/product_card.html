@@ -1,0 +1,63 @@
+<div class="glass rounded-3 overflow-hidden h-100" style="backdrop-filter: blur(10px); border: 1px solid var(--border-color); transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 20px 40px rgba(37, 99, 235, 0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+    <a href="{{ product.get_absolute_url }}" style="text-decoration: none; color: inherit;">
+        <div style="width: 100%; height: 250px; background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1)); display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; overflow: hidden;">
+            {% if product.images.first %}
+                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <i class="fas fa-image" style="color: var(--accent-blue); opacity: 0.3;"></i>
+            {% endif %}
+
+            <div style="position: absolute; top: 10px; right: 10px;">
+                <span class="badge" style="background: var(--success); color: white; padding: 0.5rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;">
+                    <i class="fas fa-check-circle"></i> Certified
+                </span>
+            </div>
+
+            <div style="position: absolute; top: 10px; left: 10px;">
+                {% if product.condition_grade == 'new' %}
+                    <span class="badge" style="background: rgba(37, 99, 235, 0.85); color: white; padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Like New</span>
+                {% elif product.condition_grade == 'excellent' %}
+                    <span class="badge" style="background: rgba(37, 99, 235, 0.85); color: white; padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Excellent</span>
+                {% else %}
+                    <span class="badge" style="background: rgba(37, 99, 235, 0.85); color: white; padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Good</span>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+
+    <div class="p-3" style="display: flex; flex-direction: column; height: calc(100% - 250px);">
+        <a href="{{ product.get_absolute_url }}" style="text-decoration: none; color: inherit;">
+            <h6 style="color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 600; min-height: 1.5em; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ product.name }}
+            </h6>
+        </a>
+
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.75rem; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 3.6em;">
+            {{ product.description|truncatewords:18 }}
+        </p>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h5 style="color: var(--accent-blue); margin: 0; font-weight: 700;">
+                ${{ product.price|floatformat:2 }}
+            </h5>
+        </div>
+
+        <div style="display: grid; gap: 0.6rem; margin-top: auto;">
+            <form method="post" action="{% url 'core:add_to_cart' %}" class="js-add-to-cart">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-sm" style="width: 100%; background: var(--accent-blue); color: white; border: none; border-radius: 6px; padding: 0.6rem; font-weight: 600;">
+                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                </button>
+            </form>
+            <form method="post" action="{% url 'orders:buy_now' %}">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <button type="submit" class="btn btn-sm" style="width: 100%; background: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.6rem; font-weight: 600;">
+                    <i class="fas fa-bolt"></i> Buy Now
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

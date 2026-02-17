@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Delivered</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .celebration {
+            font-size: 48px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .success-box {
+            background-color: #d1fae5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid #10b981;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Delivered Successfully!</h1>
+        </div>
+        
+        <div class="celebration">✓</div>
+        
+        <p>Hi <strong>{{ user.username }}</strong>,</p>
+        
+        <div class="success-box">
+            <h2 style="margin: 0; color: #065f46;">Your order has been delivered!</h2>
+            <p style="margin: 10px 0 0 0; color: #047857;">Order #{{ order.order_number }}</p>
+        </div>
+        
+        <p>We hope you're happy with your purchase! Your order was delivered on <strong>{{ order.updated_at|date:"F d, Y" }}</strong>.</p>
+        
+        <h3>How was your experience?</h3>
+        <p>We'd love to hear your feedback about the products and our service.</p>
+        
+        <center>
+            <a href="http://certibuy.com/orders/{{ order.id }}/review/" class="btn">Write a Review</a>
+        </center>
+        
+        <p><strong>Order Summary:</strong></p>
+        <ul>
+            <li>Order Number: {{ order.order_number }}</li>
+            <li>Order Date: {{ order.created_at|date:"F d, Y" }}</li>
+            <li>Delivered On: {{ order.updated_at|date:"F d, Y" }}</li>
+            <li>Total Amount: ₹{{ order.total_amount }}</li>
+        </ul>
+        
+        <p><strong>Need Help?</strong></p>
+        <p>If you have any issues with your order or need support, please don't hesitate to contact us.</p>
+        
+        <div class="footer">
+            <p>Thank you for shopping with {{ site_name }}!</p>
+            <p>We look forward to serving you again soon.</p>
+            <p>Contact: <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+        </div>
+    </div>
+</body>
+</html>

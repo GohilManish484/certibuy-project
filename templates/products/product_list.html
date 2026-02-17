@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Products - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 2rem;">
+    <div class="container-premium">
+        <h1 class="section-title-premium">Certified Products</h1>
+        <p class="section-subtitle-premium">Browse our collection of professionally inspected and certified items</p>
+        
+        <div class="product-grid-premium">
+            {% for product in products %}
+            <div class="product-card-premium">
+                <a href="{% url 'products:detail' product.pk %}" style="text-decoration: none; color: inherit;">
+                    <div class="product-image-premium">
+                        {% if product.images.first %}
+                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <i class="fas fa-box"></i>
+                        {% endif %}
+                    </div>
+                    <div class="product-body-premium">
+                        <div class="product-name-premium">{{ product.name }}</div>
+                        <div class="product-price-premium">${{ product.price }}</div>
+                        <div class="product-location-premium">
+                            <i class="fas fa-tag"></i> {{ product.category }}
+                        </div>
+                        <div class="product-badges">
+                            <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                            {% if product.condition_grade == 'new' %}
+                                <span class="badge-condition-new">New</span>
+                            {% elif product.condition_grade == 'excellent' %}
+                                <span class="badge-condition-excellent">Excellent</span>
+                            {% else %}
+                                <span class="badge-condition-good">{{ product.get_condition_grade_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 0;">
+                <i class="fas fa-box-open" style="font-size: 4rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-secondary);">No products available</h3>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if is_paginated %}
+        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 3rem;">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="btn-secondary-custom">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn-secondary-custom">Previous</a>
+            {% endif %}
+            
+            <span style="color: var(--text-primary); padding: 0.75rem 1.5rem;">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn-secondary-custom">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="btn-secondary-custom">Last</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

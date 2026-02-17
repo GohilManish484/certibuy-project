@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Inspections - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 5rem;">
+    <div class="container-premium">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">
+                <i class="fas fa-clipboard-check" style="color: var(--accent-blue);"></i>
+            </div>
+            <h1 class="section-title-premium">Inspections</h1>
+            <p class="section-subtitle-premium">Review and manage product inspections</p>
+        </div>
+        
+        <div class="glass" style="padding: 2rem;">
+            {% if inspections %}
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 1rem; text-align: left; color: var(--text-primary);">ID</th>
+                            <th style="padding: 1rem; text-align: left; color: var(--text-primary);">Product</th>
+                            <th style="padding: 1rem; text-align: left; color: var(--text-primary);">Inspector</th>
+                            <th style="padding: 1rem; text-align: left; color: var(--text-primary);">Date</th>
+                            <th style="padding: 1rem; text-align: left; color: var(--text-primary);">Grade</th>
+                            <th style="padding: 1rem; text-align: left; color: var(--text-primary);">Status</th>
+                            <th style="padding: 1rem; text-align: left; color: var(--text-primary);">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inspection in inspections %}
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td style="padding: 1rem; color: var(--text-secondary);">#{{ inspection.id }}</td>
+                            <td style="padding: 1rem; color: var(--text-primary);">{{ inspection.submission.product_name }}</td>
+                            <td style="padding: 1rem; color: var(--text-secondary);">{{ inspection.inspector.username }}</td>
+                            <td style="padding: 1rem; color: var(--text-secondary);">{{ inspection.inspection_date|date:"M d, Y" }}</td>
+                            <td style="padding: 1rem;">
+                                <span class="badge badge-{{ inspection.condition_grade }}">{{ inspection.get_condition_grade_display }}</span>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <span class="badge badge-{{ inspection.status }}">{{ inspection.get_status_display }}</span>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <a href="{% url 'inspections:detail' inspection.pk %}" class="btn-secondary-custom" style="padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 3rem;">
+                <i class="fas fa-clipboard" style="font-size: 4rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                <p style="color: var(--text-secondary); font-size: 1.1rem;">No inspections found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

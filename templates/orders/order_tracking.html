@@ -1,0 +1,819 @@
+{% extends "base.html" %}
+
+{% block title %}Track Order #{{ order.order_number }} - Certibuy{% endblock %}
+
+{% block content %}
+<style>
+/* Premium Order Tracking Styles */
+.premium-track-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Header Card */
+.premium-track-header {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.05), rgba(118, 75, 162, 0.05));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(22, 163, 74, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(22, 163, 74, 0.1);
+    animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.track-order-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 0.75rem 0;
+}
+
+.track-order-date {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.track-order-date i {
+    color: #16a34a;
+}
+
+.track-total-section {
+    border-top: 2px solid rgba(22, 163, 74, 0.15);
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.track-total-label {
+    font-size: 1rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.track-total-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Status Timeline Card */
+.premium-status-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(22, 163, 74, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.track-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.track-section-title i {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Animated Progress Stepper */
+.premium-progress-stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.premium-progress-stepper::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 5%;
+    right: 5%;
+    height: 3px;
+    background: linear-gradient(90deg, #e2e8f0 0%, #e2e8f0 100%);
+    z-index: 0;
+}
+
+.stepper-progress-bar {
+    position: absolute;
+    top: 30px;
+    left: 5%;
+    height: 3px;
+    background: linear-gradient(90deg, #16a34a, #22c55e);
+    z-index: 1;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 20px rgba(22, 163, 74, 0.5);
+}
+
+.stepper-progress-bar.status-pending,
+.stepper-progress-bar.status-payment-successful,
+.stepper-progress-bar.status-cancelled { width: 0%; }
+.stepper-progress-bar.status-confirmed,
+.stepper-progress-bar.status-packed { width: 25%; }
+.stepper-progress-bar.status-shipped { width: 50%; }
+.stepper-progress-bar.status-out-for-delivery { width: 75%; }
+.stepper-progress-bar.status-delivered { width: 100%; }
+
+.stepper-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.stepper-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 0 auto 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stepper-icon-wrapper.active {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+}
+
+.stepper-icon-wrapper.completed {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.stepper-icon-wrapper.pending {
+    background: #f1f5f9;
+    color: #94a3b8;
+}
+
+.stepper-icon-wrapper i {
+    font-size: 1.5rem;
+}
+
+.stepper-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.stepper-label.active {
+    color: #16a34a;
+}
+
+.stepper-label.pending {
+    color: #94a3b8;
+}
+
+/* Tracking Info Box */
+.premium-tracking-info {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(118, 75, 162, 0.08));
+    border: 1px solid rgba(22, 163, 74, 0.2);
+    border-left: 5px solid #16a34a;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-top: 2rem;
+    animation: slideLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tracking-info-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tracking-info-title i {
+    color: #16a34a;
+}
+
+.tracking-info-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.tracking-info-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.tracking-info-label {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.tracking-info-value {
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* Items Card */
+.premium-items-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(22, 163, 74, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.premium-product-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.03), rgba(118, 75, 162, 0.03));
+    border: 1px solid rgba(22, 163, 74, 0.1);
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-product-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(22, 163, 74, 0.15);
+    border-color: rgba(22, 163, 74, 0.3);
+}
+
+.premium-product-item:last-child {
+    margin-bottom: 0;
+}
+
+.product-image-wrapper {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.premium-product-item:hover .product-image-wrapper {
+    transform: scale(1.05);
+}
+
+.product-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-details-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-name-link {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    transition: color 0.3s ease;
+}
+
+.product-name-link:hover {
+    color: #16a34a;
+}
+
+.product-quantity {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.product-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.product-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: transform 0.2s ease;
+}
+
+.product-badge:hover {
+    transform: scale(1.05);
+}
+
+.badge-condition {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #0c63e4;
+}
+
+.badge-storage {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #15803d;
+}
+
+.badge-color {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+    color: #be185d;
+}
+
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+/* Address Card */
+.premium-address-card {
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.8));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(22, 163, 74, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.address-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.address-title i {
+    color: #16a34a;
+}
+
+.address-name {
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.address-detail {
+    color: #64748b;
+    margin: 0.35rem 0;
+    font-size: 0.95rem;
+}
+
+/* Order History */
+.premium-history-section {
+    border-top: 2px solid rgba(22, 163, 74, 0.1);
+    padding-top: 2rem;
+    margin-top: 2rem;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+.history-timeline {
+    position: relative;
+    padding-left: 3rem;
+}
+
+.history-item {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.history-dot {
+    position: absolute;
+    left: -3.25rem;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 2px #16a34a, 0 4px 10px rgba(22, 163, 74, 0.3);
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.history-dot:not(:first-child) {
+    background: #cbd5e1;
+    box-shadow: 0 0 0 2px #cbd5e1;
+    animation: none;
+}
+
+.history-connector {
+    border-left: 3px solid #e2e8f0;
+    padding-left: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.history-status {
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.05rem;
+}
+
+.history-timestamp {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.history-notes {
+    color: #475569;
+    font-size: 0.9rem;
+    margin: 0.75rem 0 0 0;
+    padding: 0.75rem 1rem;
+    background: rgba(22, 163, 74, 0.05);
+    border-left: 3px solid #16a34a;
+    border-radius: 8px;
+}
+
+/* Action Buttons */
+.premium-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+.action-btn {
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.action-btn-cancel {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
+    border: 2px solid #fca5a5;
+}
+
+.action-btn-cancel:hover {
+    background: linear-gradient(135deg, #fecaca, #fca5a5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(153, 27, 27, 0.2);
+}
+
+.action-btn-return {
+    background: white;
+    color: #475569;
+    border: 2px solid #cbd5e1;
+}
+
+.action-btn-return:hover {
+    background: #f8fafc;
+    border-color: #16a34a;
+    color: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.15);
+}
+
+.action-btn-continue {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    border: 2px solid transparent;
+}
+
+.action-btn-continue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideLeft {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .premium-track-header {
+        padding: 1.5rem;
+    }
+    
+    .track-order-number {
+        font-size: 1.4rem;
+    }
+    
+    .track-total-amount {
+        font-size: 1.6rem;
+    }
+    
+    .premium-status-card,
+    .premium-items-card {
+        padding: 1.5rem;
+    }
+    
+    .premium-progress-stepper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .premium-progress-stepper::before,
+    .stepper-progress-bar {
+        display: none;
+    }
+    
+    .stepper-step {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        text-align: left;
+    }
+    
+    .stepper-icon-wrapper {
+        margin: 0;
+    }
+    
+    .premium-product-item {
+        flex-direction: column;
+    }
+    
+    .product-image-wrapper {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .premium-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<section class="premium-track-container">
+    <div>
+        <!-- Order Header -->
+        <div class="premium-track-header">
+            <h1 class="track-order-number">Order #{{ order.order_number }}</h1>
+            <p class="track-order-date">
+                <i class="fas fa-calendar-alt"></i>
+                Placed on {{ order.created_at|date:"M d, Y" }}
+            </p>
+            <div class="track-total-section">
+                <span class="track-total-label">Total Amount via {{ order.get_payment_method_display }}:</span>
+                <span class="track-total-amount">₹{{ order.total_amount|floatformat:2 }}</span>
+            </div>
+        </div>
+
+        <!-- Status Timeline -->
+        <div class="premium-status-card">
+            <h2 class="track-section-title">
+                <i class="fas fa-shipping-fast"></i>
+                Order Status
+            </h2>
+            
+            <div class="premium-progress-stepper">
+                <div class="stepper-progress-bar status-{{ order.status|lower }}"></div>
+                
+                {% for status in status_choices %}
+                <div class="stepper-step">
+                    <div class="stepper-icon-wrapper {% if status == order.status %}active{% elif order.get_status_display|lower >= status|lower %}completed{% else %}pending{% endif %}">
+                        {% if status == order.status %}
+                            <i class="fas fa-spinner fa-pulse"></i>
+                        {% elif order.get_status_display|lower >= status|lower %}
+                            <i class="fas fa-check"></i>
+                        {% else %}
+                            <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                        {% endif %}
+                    </div>
+                    <p class="stepper-label {% if status == order.status %}active{% elif order.get_status_display|lower < status|lower %}pending{% endif %}">
+                        {{ status|title }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Tracking Info -->
+            {% if order.tracking_id %}
+            <div class="premium-tracking-info">
+                <h3 class="tracking-info-title">
+                    <i class="fas fa-box"></i>
+                    Tracking Information
+                </h3>
+                <div class="tracking-info-grid">
+                    <div class="tracking-info-item">
+                        <span class="tracking-info-label">Tracking ID:</span>
+                        <span class="tracking-info-value">{{ order.tracking_id }}</span>
+                    </div>
+                    {% if order.courier_name %}
+                    <div class="tracking-info-item">
+                        <span class="tracking-info-label">Courier:</span>
+                        <span class="tracking-info-value">{{ order.courier_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if order.estimated_delivery %}
+                    <div class="tracking-info-item">
+                        <span class="tracking-info-label">Estimated Delivery:</span>
+                        <span class="tracking-info-value">{{ order.estimated_delivery|date:"M d, Y" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Order Items -->
+        <div class="premium-items-card">
+            <h2 class="track-section-title">
+                <i class="fas fa-box-open"></i>
+                Order Items
+            </h2>
+            
+            <div>
+                {% for item in order.items.all %}
+                <div class="premium-product-item">
+                    <div class="product-image-wrapper">
+                        {% if item.product.images.exists %}
+                        <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}">
+                        {% else %}
+                        <img src="https://via.placeholder.com/120" alt="{{ item.product.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="product-details-section">
+                        <div>
+                            <a href="{% url 'products:detail' item.product.id %}" class="product-name-link">
+                                {{ item.product.name }}
+                            </a>
+                            <p class="product-quantity">Quantity: {{ item.quantity }} × ₹{{ item.price|floatformat:2 }}</p>
+                            
+                            {% if item.condition or item.storage or item.color %}
+                            <div class="product-badges">
+                                {% if item.condition %}
+                                <span class="product-badge badge-condition">{{ item.condition|title }}</span>
+                                {% endif %}
+                                {% if item.storage %}
+                                <span class="product-badge badge-storage">{{ item.storage|upper }}</span>
+                                {% endif %}
+                                {% if item.color %}
+                                <span class="product-badge badge-color">{{ item.color }}</span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <p class="product-price">₹{{ item.get_total_price|floatformat:2 }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Delivery Address -->
+        <div class="premium-address-card">
+            <h3 class="address-title">
+                <i class="fas fa-map-marker-alt"></i>
+                Delivery Address
+            </h3>
+            <p class="address-name">{{ order.address.full_name }}</p>
+            <p class="address-detail">{{ order.address.phone }}</p>
+            <p class="address-detail">{{ order.address.address }}, {{ order.address.city }} {{ order.address.postal_code }}</p>
+        </div>
+
+        <!-- Status History -->
+        {% if status_timeline %}
+        <div class="premium-status-card">
+            <div class="premium-history-section">
+                <h3 class="track-section-title">
+                    <i class="fas fa-clock-rotate-left"></i>
+                    Order History
+                </h3>
+                <div class="history-timeline">
+                    {% for history in status_timeline %}
+                    <div class="history-item">
+                        <div class="history-dot"></div>
+                        {% if not forloop.last %}
+                        <div class="history-connector">
+                        {% else %}
+                        <div>
+                        {% endif %}
+                            <p class="history-status">{{ history.get_status_display }}</p>
+                            <p class="history-timestamp">{{ history.timestamp|date:"M d, Y H:i" }}</p>
+                            {% if history.notes %}
+                            <p class="history-notes">{{ history.notes }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="premium-actions-grid">
+            {% if order.can_cancel %}
+            <form method="post" action="{% url 'orders:cancel_order' order.id %}" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                {% csrf_token %}
+                <button type="submit" class="action-btn action-btn-cancel">
+                    <i class="fas fa-times-circle"></i>
+                    Cancel Order
+                </button>
+            </form>
+            {% endif %}
+            
+            {% if order.can_request_refund %}
+            <a href="{% url 'core:help' %}" class="action-btn action-btn-return">
+                <i class="fas fa-undo"></i>
+                Request Return
+            </a>
+            {% endif %}
+            
+            <a href="{% url 'core:home' %}" class="action-btn action-btn-continue">
+                <i class="fas fa-shopping-bag"></i>
+                Continue Shopping
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

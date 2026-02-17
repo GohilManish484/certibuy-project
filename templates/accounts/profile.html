@@ -1,0 +1,760 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - CertiBuy{%endblock %}
+
+{% block content %}
+<style>
+/* Premium Profile/Dashboard Styles */
+.premium-profile-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.premium-profile-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 2rem;
+}
+
+.premium-profile-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(22, 163, 74, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profile-avatar-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem auto;
+    overflow: hidden;
+    border: 5px solid #16a34a;
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-placeholder {
+    width: 140px;
+    height: 140px;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: white;
+    font-weight: bold;
+    margin: 0 auto 1.5rem auto;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.profile-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+}
+
+.profile-role-badge {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.profile-info-section {
+    border-top: 2px solid rgba(22, 163, 74, 0.15);
+    padding-top: 2rem;
+}
+
+.profile-info-item {
+    margin-bottom: 1.5rem;
+}
+
+.profile-info-label {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-info-label i {
+    color: #16a34a;
+}
+
+.profile-info-value {
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.profile-edit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.profile-edit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+}
+
+.profile-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid rgba(22, 163, 74, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.profile-section-title i {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.premium-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.premium-stat-card {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(118, 75, 162, 0.08));
+    border-left: 5px solid #16a34a;
+    padding: 2rem;
+    border-radius: 15px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(22, 163, 74, 0.15);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    color: #16a34a;
+    margin-bottom: 1rem;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.premium-activity-item {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.03), rgba(118, 75, 162, 0.03));
+    border: 1px solid rgba(22, 163, 74, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-activity-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.12);
+    border-color: rgba(22, 163, 74, 0.3);
+}
+
+.activity-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.activity-meta {
+    color: #64748b;
+    font-size: 0.9rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.activity-badge {
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.activity-view-btn {
+    padding: 0.6rem 1.2rem;
+    background: white;
+    color: #16a34a;
+    border: 2px solid #16a34a;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.activity-view-btn:hover {
+    background: #16a34a;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.premium-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.premium-action-btn {
+    padding: 1.2rem;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.premium-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+}
+
+.premium-action-btn-secondary {
+    background: white;
+    color: #16a34a;
+    border: 2px solid #16a34a;
+}
+
+.premium-action-btn-secondary:hover {
+    background: #f8fafc;
+    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.15);
+}
+
+.badge-customer {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #0c63e4;
+}
+
+.badge-seller {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #059669;
+}
+
+.badge-inspector {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #d97706;
+}
+
+.badge-admin {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #dc2626;
+}
+
+.badge-pending {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #d97706;
+}
+
+.badge-approved {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #059669;
+}
+
+.badge-completed {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #0c63e4;
+}
+
+.profile-section-title {
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(22, 163, 74, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-section-title i {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.premium-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.activity-title {
+    color: #1e293b;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.activity-meta {
+    color: #64748b;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.activity-meta i {
+    color: #16a34a;
+}
+
+.activity-badge {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.activity-view-btn {
+    padding: 0.6rem 1.2rem;
+    background: white;
+    color: #16a34a;
+    border: 2px solid #16a34a;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.activity-view-btn:hover {
+    background: #16a34a;
+    color: white;
+    transform: translateX(5px);
+}
+
+.view-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    color: #16a34a;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.view-all-link:hover {
+    gap: 0.75rem;
+    color: #22c55e;
+}
+
+.view-all-link i {
+    transition: transform 0.3s ease;
+}
+
+.view-all-link:hover i {
+    transform: translateX(5px);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 15px rgba(22, 163, 74, 0);
+    }
+}
+
+@media (max-width: 968px) {
+    .premium-profile-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .premium-stat-grid,
+    .premium-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<section class="premium-profile-container">
+    <div>
+        
+        {% if messages %}
+        <div style="margin-bottom: 2rem; animation: slideUp 0.5s ease;">
+            {% for message in messages %}
+            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border: 1px solid #10b981; color: #1e293b; border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1rem;">
+                <i class="fas fa-check-circle" style="color: #10b981;"></i> {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="premium-profile-grid">
+            <!-- Left Sidebar - User Info Card -->
+            <div class="premium-profile-card">
+                <div class="profile-avatar-section">
+                    {% if user.profile_photo %}
+                    <div class="profile-avatar">
+                        <img src="{{ user.profile_photo.url }}" alt="{{ user.username }}">
+                    </div>
+                    {% else %}
+                    <div class="profile-avatar-placeholder">
+                        {{ user.username|first|upper }}
+                    </div>
+                    {% endif %}
+                    
+                    <h2 class="profile-name">
+                        {{ user.get_full_name|default:user.username }}
+                    </h2>
+                    
+                    <span class="profile-role-badge badge-{{ user.role }}">
+                        <i class="fas fa-user-tag"></i> {{ user.get_role_display }}
+                    </span>
+                </div>
+                
+                <div class="profile-info-section">
+                    <div class="profile-info-item">
+                        <p class="profile-info-label">
+                            <i class="fas fa-user"></i> Username
+                        </p>
+                        <p class="profile-info-value">{{ user.username }}</p>
+                    </div>
+                    
+                    <div class="profile-info-item">
+                        <p class="profile-info-label">
+                            <i class="fas fa-envelope"></i> Email
+                        </p>
+                        <p class="profile-info-value">{{ user.email }}</p>
+                    </div>
+                    
+                    <div class="profile-info-item">
+                        <p class="profile-info-label">
+                            <i class="fas fa-id-card"></i> Full Name
+                        </p>
+                        <p class="profile-info-value">{{ user.first_name }} {{ user.last_name }}</p>
+                    </div>
+                    
+                    <div class="profile-info-item">
+                        <p class="profile-info-label">
+                            <i class="fas fa-calendar-plus"></i> Member Since
+                        </p>
+                        <p class="profile-info-value">{{ user.date_joined|date:"F d, Y" }}</p>
+                    </div>
+                    
+                    <div class="profile-info-item">
+                        <p class="profile-info-label">
+                            <i class="fas fa-clock"></i> Last Login
+                        </p>
+                        <p class="profile-info-value">{{ user.last_login|date:"M d, Y g:i A" }}</p>
+                    </div>
+                </div>
+                
+                <button onclick="document.getElementById('editForm').style.display='block'; this.style.display='none';" class="profile-edit-btn">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+            </div>
+            
+            <!-- Right Content Area -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                
+                <!-- Edit Form (Hidden by default) -->
+                <div id="editForm" style="display: none;">
+                    <div class="premium-profile-card">
+                        <h2 class="profile-section-title">
+                            <i class="fas fa-user-edit"></i> Edit Profile Information
+                        </h2>
+                        
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <!-- Profile Photo Upload -->
+                            <div style="margin-bottom: 2rem;">
+                                <label style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem; display: block; font-weight: 600;">
+                                    <i class="fas fa-camera"></i> Profile Photo
+                                </label>
+                                <div style="display: flex; gap: 1.5rem; align-items: center;">
+                                    {% if user.profile_photo %}
+                                    <div style="width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 3px solid #16a34a;">
+                                        <img src="{{ user.profile_photo.url }}" alt="Current photo" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    {% else %}
+                                    <div style="width: 90px; height: 90px; background: linear-gradient(135deg, #16a34a, #22c55e); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; font-weight: bold;">
+                                        {{ user.username|first|upper }}
+                                    </div>
+                                    {% endif %}
+                                    <div style="flex: 1;">
+                                        {{ form.profile_photo }}
+                                        <p style="color: #64748b; font-size: 0.85rem; margin-top: 0.75rem;">
+                                            <i class="fas fa-info-circle"></i> Upload a profile photo (JPG, PNG, max 5MB)
+                                        </p>
+                                    </div>
+                                </div>
+                                {% if form.profile_photo.errors %}
+                                <span style="color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem; display: block;">{{ form.profile_photo.errors }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <label style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; font-weight: 600;">
+                                        <i class="fas fa-user"></i> First Name *
+                                    </label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <span style="color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem; display: block;">{{ form.first_name.errors }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div>
+                                    <label style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; font-weight: 600;">
+                                        <i class="fas fa-user"></i> Last Name *
+                                    </label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                    <span style="color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem; display: block;">{{ form.last_name.errors }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; font-weight: 600;">
+                                    <i class="fas fa-at"></i> Username *
+                                </label>
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                <span style="color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem; display: block;">{{ form.username.errors }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div style="margin-bottom: 2rem;">
+                                <label style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; font-weight: 600;">
+                                    <i class="fas fa-envelope"></i> Email *
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <span style="color: #dc2626; font-size: 0.85rem; margin-top: 0.5rem; display: block;">{{ form.email.errors }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" class="premium-action-btn" style="flex: 1;">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button type="button" onclick="document.getElementById('editForm').style.display='none'; document.querySelector('.profile-edit-btn').style.display='flex';" class="premium-action-btn premium-action-btn-secondary" style="flex: 1;">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="premium-profile-card">
+                    <h2 class="profile-section-title">
+                        <i class="fas fa-chart-line"></i> My Statistics
+                    </h2>
+                    
+                    <div class="premium-stat-grid">
+                        <div class="premium-stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="stat-value">{{ submission_count }}</div>
+                            <div class="stat-label">Total Submissions</div>
+                        </div>
+                        
+                        {% if user.role == 'inspector' %}
+                        <div class="premium-stat-card" style="border-left-color: #10b981;">
+                            <div class="stat-icon" style="color: #10b981;">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div class="stat-value">{{ inspection_count }}</div>
+                            <div class="stat-label">Total Inspections</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Recent Submissions -->
+                {% if recent_submissions %}
+                <div class="premium-profile-card">
+                    <h2 class="profile-section-title">
+                        <i class="fas fa-history"></i> Recent Submissions
+                    </h2>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for submission in recent_submissions %}
+                        <div class="premium-activity-item">
+                            <div style="flex: 1;">
+                                <h3 class="activity-title">{{ submission.product_name }}</h3>
+                                <p class="activity-meta">
+                                    <i class="fas fa-tag"></i> {{ submission.category }} • 
+                                    <i class="fas fa-dollar-sign"></i> ${{ submission.expected_price }} • 
+                                    <i class="fas fa-clock"></i> {{ submission.created_at|date:"M d, Y" }}
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <span class="activity-badge badge-{{ submission.status }}">{{ submission.get_status_display }}</span>
+                                <a href="{% url 'sellers:submission_detail' submission.pk %}" class="activity-view-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'sellers:my_submissions' %}" class="view-all-link">
+                        View All Submissions <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+                
+                <!-- Recent Inspections -->
+                {% if user.role == 'inspector' and recent_inspections %}
+                <div class="premium-profile-card">
+                    <h2 class="profile-section-title">
+                        <i class="fas fa-clipboard-list"></i> Recent Inspections
+                    </h2>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for inspection in recent_inspections %}
+                        <div class="premium-activity-item">
+                            <div style="flex: 1;">
+                                <h3 class="activity-title">{{ inspection.submission.product_name }}</h3>
+                                <p class="activity-meta">
+                                    <i class="fas fa-calendar"></i> {{ inspection.inspection_date|date:"M d, Y" }} • 
+                                    <i class="fas fa-star"></i> {{ inspection.get_condition_grade_display }}
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <span class="activity-badge badge-{{ inspection.status }}">{{ inspection.get_status_display }}</span>
+                                <a href="{% url 'inspections:detail' inspection.pk %}" class="activity-view-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'inspections:list' %}" class="view-all-link">
+                        View All Inspections <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endif %}
+                
+                <!-- Quick Actions -->
+                <div class="premium-profile-card">
+                    <h2 class="profile-section-title">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </h2>
+                    <div class="premium-actions-grid">
+                        {% if user.role == 'seller' %}
+                        <a href="{% url 'sellers:submit_product' %}" class="premium-action-btn">
+                            <i class="fas fa-plus"></i> Submit Product
+                        </a>
+                        <a href="{% url 'sellers:my_submissions' %}" class="premium-action-btn premium-action-btn-secondary">
+                            <i class="fas fa-list"></i> My Submissions
+                        </a>
+                        {% endif %}
+                        {% if user.role == 'inspector' %}
+                        <a href="{% url 'inspections:list' %}" class="premium-action-btn">
+                            <i class="fas fa-clipboard-check"></i> View Inspections
+                        </a>
+                        {% endif %}
+                        {% if user.is_staff %}
+                        <a href="/admin/" class="premium-action-btn premium-action-btn-secondary">
+                            <i class="fas fa-cog"></i> Admin Panel
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'products:list' %}" class="premium-action-btn premium-action-btn-secondary">
+                            <i class="fas fa-shopping-bag"></i> Browse Products
+                        </a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

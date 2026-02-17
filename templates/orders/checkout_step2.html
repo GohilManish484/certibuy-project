@@ -1,0 +1,891 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Step 2: Payment Method - CertiBuy{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Premium Checkout Section */
+    .premium-checkout-bg {
+        min-height: 100vh;
+        padding-top: 6rem;
+        padding-bottom: 4rem;
+        position: relative;
+    }
+    
+    /* Progress Stepper */
+    .premium-progress {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2.5rem;
+        animation: slideDown 0.6s ease-out;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .progress-step {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        position: relative;
+    }
+    
+    .progress-step.completed .step-circle {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .progress-step.active .step-circle {
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .progress-step.inactive .step-circle {
+        background: #e5e7eb;
+        color: #9ca3af;
+    }
+    
+    .step-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: white;
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+    
+    .step-line {
+        flex: 1;
+        max-width: 100px;
+        height: 3px;
+        background: #e5e7eb;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .step-line.completed {
+        background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    }
+    
+    .step-label {
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .progress-step.active .step-label {
+        color: #1f2937;
+    }
+    
+    .progress-step.inactive .step-label {
+        color: #9ca3af;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(22, 163, 74, 0.6);
+        }
+    }
+    
+    /* Premium Header */
+    .premium-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2.5rem;
+        animation: slideDown 0.7s ease-out;
+        text-align: center;
+    }
+    
+    .premium-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+    
+    .premium-header p {
+        color: #6b7280;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    /* Payment Card Container */
+    .payment-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        margin-bottom: 2rem;
+        animation: slideUp 0.8s ease-out;
+        transition: all 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .payment-card:hover {
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    /* Payment Options */
+    .payment-option {
+        position: relative;
+        display: flex;
+        gap: 1.5rem;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        border: 3px solid #e5e7eb;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+        overflow: hidden;
+    }
+    
+    .payment-option::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(22, 163, 74, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .payment-option:hover {
+        border-color: #16a34a;
+        transform: translateX(4px);
+        box-shadow: -4px 0 0 0 #16a34a, 0 4px 12px rgba(22, 163, 74, 0.15);
+    }
+    
+    .payment-option:hover::before {
+        opacity: 1;
+    }
+    
+    .payment-option.selected {
+        border-color: #16a34a;
+        background: linear-gradient(135deg, rgba(22, 163, 74, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+        box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+    }
+    
+    .payment-option.selected::before {
+        opacity: 1;
+    }
+    
+    .payment-radio {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        cursor: pointer;
+        accent-color: #16a34a;
+    }
+    
+    .payment-content {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .payment-title {
+        color: #1f2937;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .payment-description {
+        color: #6b7280;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .payment-badges {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .payment-badge {
+        background: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6b7280;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .payment-option:hover .payment-badge {
+        border-color: #16a34a;
+        color: #16a34a;
+    }
+    
+    .payment-check {
+        color: #16a34a;
+        font-size: 1.75rem;
+        opacity: 0;
+        transition: all 0.3s;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .payment-option.selected .payment-check {
+        opacity: 1;
+        animation: checkBounce 0.5s ease;
+    }
+    
+    @keyframes checkBounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+    
+    /* EMI Grid */
+    .emi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .emi-plan-card {
+        background: white;
+        border: 2px solid #e5e7eb;
+        padding: 1.25rem;
+        border-radius: 12px;
+        text-align: center;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    
+    .emi-plan-card:hover {
+        border-color: #16a34a;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .emi-amount {
+        font-weight: 800;
+        color: #1f2937;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .emi-duration {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+    
+    .emi-interest {
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        display: inline-block;
+    }
+    
+    .emi-interest.zero {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .emi-interest.normal {
+        background: #fed7aa;
+        color: #9a3412;
+    }
+    
+    /* EMI Selection Panel */
+    .emi-selection-panel {
+        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        padding: 2rem;
+        border-radius: 16px;
+        border: 3px solid #a7f3d0;
+        margin-top: 2rem;
+        animation: expandDown 0.4s ease-out;
+    }
+    
+    @keyframes expandDown {
+        from {
+            opacity: 0;
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        to {
+            opacity: 1;
+            max-height: 1000px;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+    }
+    
+    .emi-selection-header {
+        color: #065f46;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .emi-plan-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: white;
+        border: 3px solid #a7f3d0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .emi-plan-option:hover {
+        border-color: #059669;
+        box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+        transform: scale(1.02);
+    }
+    
+    .emi-plan-option input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #059669;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 2.5rem;
+    }
+    
+    .btn-back {
+        flex: 1;
+        background: white;
+        color: #4b5563;
+        padding: 1rem 2rem;
+        border: 3px solid #d1d5db;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .btn-back:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+        transform: translateX(-4px);
+    }
+    
+    .btn-continue {
+        flex: 2;
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+    
+    .btn-continue:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+    }
+    
+    .btn-continue:active {
+        transform: translateY(0);
+    }
+    
+    /* Order Summary Sidebar */
+    .order-summary {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+        position: sticky;
+        top: 100px;
+        animation: slideLeft 0.9s ease-out;
+    }
+    
+    @keyframes slideLeft {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .summary-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+    }
+    
+    .summary-items {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+        border-radius: 10px;
+        transition: all 0.2s;
+    }
+    
+    .summary-item:hover {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        transform: translateX(4px);
+    }
+    
+    .item-name {
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+    
+    .item-price {
+        font-weight: 700;
+        color: #1f2937;
+    }
+    
+    .summary-calculations {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .calculation-row {
+        display: flex;
+        justify-content: space-between;
+        color: #6b7280;
+        font-size: 1rem;
+    }
+    
+    .calculation-row.total {
+        color: #1f2937;
+        font-size: 1.3rem;
+        font-weight: 800;
+        padding-top: 1rem;
+        border-top: 2px solid #e5e7eb;
+    }
+    
+    .delivery-free {
+        color: #059669;
+        font-weight: 700;
+    }
+    
+    .security-badge {
+        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid #a7f3d0;
+        text-align: center;
+    }
+    
+    .security-badge p {
+        margin: 0;
+        color: #065f46;
+        font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .security-icon {
+        color: #059669;
+        font-size: 1.1rem;
+    }
+    
+    /* Section Title */
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .section-title i {
+        color: #16a34a;
+        font-size: 1.5rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .premium-checkout-bg {
+            padding-top: 5rem;
+        }
+        
+        .premium-header h1 {
+            font-size: 1.75rem;
+        }
+        
+        .progress-container {
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+        
+        .step-line {
+            max-width: 60px;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+        }
+        
+        .payment-card {
+            padding: 1.5rem;
+        }
+        
+        .payment-option {
+            padding: 1.5rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .emi-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="premium-checkout-bg">
+    <div class="container" style="max-width: 1320px; position: relative; z-index: 1;">
+        <!-- Progress Stepper -->
+        <div class="premium-progress">
+            <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center;" class="progress-container">
+                <div class="progress-step completed">
+                    <div class="step-circle">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span class="step-label">Address</span>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="progress-step active">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Payment</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step inactive">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Review</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="premium-header">
+            <h1>
+                <i class="fas fa-credit-card"></i> Payment Method
+            </h1>
+            <p>Choose your preferred payment option to continue</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <form method="post" id="payment-form">
+                    {% csrf_token %}
+                    <div class="payment-card">
+                        
+                        <!-- Payment Method Selection -->
+                        <div>
+                            <h3 class="section-title">
+                                <i class="fas fa-wallet"></i> Select Payment Method
+                            </h3>
+                            
+                            <!-- Online Payment Option -->
+                            <label id="online-label" class="payment-option" onclick="selectPaymentMethod('online')">
+                                <input type="radio" name="payment_method" value="online" class="payment-radio">
+                                <div class="payment-content">
+                                    <div class="payment-title">
+                                        <i class="fas fa-credit-card"></i>
+                                        Online Payment
+                                    </div>
+                                    <p class="payment-description">Pay instantly with Card, UPI, or Net Banking</p>
+                                    <div class="payment-badges">
+                                        <span class="payment-badge">
+                                            <i class="fab fa-cc-visa"></i> Visa
+                                        </span>
+                                        <span class="payment-badge">
+                                            <i class="fab fa-cc-mastercard"></i> Mastercard
+                                        </span>
+                                        <span class="payment-badge">
+                                            <i class="fas fa-mobile-alt"></i> UPI
+                                        </span>
+                                        <span class="payment-badge">
+                                            <i class="fas fa-university"></i> Net Banking
+                                        </span>
+                                    </div>
+                                </div>
+                                <i class="fas fa-check-circle payment-check"></i>
+                            </label>
+
+                            <!-- EMI Payment Option -->
+                            <label id="emi-label" class="payment-option" onclick="selectPaymentMethod('emi')">
+                                <input type="radio" name="payment_method" value="emi" class="payment-radio">
+                                <div class="payment-content">
+                                    <div class="payment-title">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        Pay in EMI
+                                    </div>
+                                    <p class="payment-description">Flexible EMI options • Zero interest available</p>
+                                    <div class="emi-grid">
+                                        {% for key, plan in emi_options.items %}
+                                        <div class="emi-plan-card">
+                                            <div class="emi-amount">₹{{ plan.monthly_amount|floatformat:0 }}/mo</div>
+                                            <div class="emi-duration">{{ plan.months }} months</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <i class="fas fa-check-circle payment-check"></i>
+                            </label>
+
+                            <!-- COD Payment Option -->
+                            <label id="cod-label" class="payment-option" onclick="selectPaymentMethod('cod')">
+                                <input type="radio" name="payment_method" value="cod" class="payment-radio">
+                                <div class="payment-content">
+                                    <div class="payment-title">
+                                        <i class="fas fa-hand-holding-usd"></i>
+                                        Cash on Delivery
+                                    </div>
+                                    <p class="payment-description">Pay only after inspecting your product at delivery</p>
+                                </div>
+                                <i class="fas fa-check-circle payment-check"></i>
+                            </label>
+                        </div>
+
+                        <!-- EMI Selection Section (Hidden by default) -->
+                        <div id="emi-selection" style="display: none;" class="emi-selection-panel">
+                            <h4 class="emi-selection-header">
+                                <i class="fas fa-list-check"></i> Choose Your EMI Plan
+                            </h4>
+                            <div class="emi-grid">
+                                {% for key, plan in emi_options.items %}
+                                <label class="emi-plan-option">
+                                    <input type="radio" name="emi_plan" value="{{ key }}">
+                                    <div style="text-align: center;">
+                                        <div style="font-weight: 700; color: #065f46; font-size: 1.1rem;">{{ plan.months }} Months</div>
+                                        <div style="color: #6b7280; font-size: 0.95rem; margin: 0.5rem 0;">₹{{ plan.monthly_amount|floatformat:0 }}/month</div>
+                                        {% if plan.interest_rate > 0 %}
+                                        <div class="emi-interest normal">{{ plan.interest_rate|floatformat:2 }}% Interest</div>
+                                        {% else %}
+                                        <div class="emi-interest zero"><i class="fas fa-check"></i> 0% Interest</div>
+                                        {% endif %}
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" onclick="window.history.back();" class="btn-back">
+                            <i class="fas fa-chevron-left"></i> Back
+                        </button>
+                        <button type="submit" class="btn-continue">
+                            Continue to Review <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="order-summary">
+                    <h3 class="summary-title">Order Summary</h3>
+                    
+                    <div class="summary-items">
+                        {% for item in cart_items %}
+                        <div class="summary-item">
+                            <span class="item-name">{{ item.product.name }} × {{ item.quantity }}</span>
+                            <span class="item-price">₹{{ item.price|floatformat:2 }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="summary-calculations">
+                        <div class="calculation-row">
+                            <span>Subtotal</span>
+                            <span>₹{{ subtotal|floatformat:2 }}</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>Delivery</span>
+                            <span class="delivery-free">Free</span>
+                        </div>
+                        <div class="calculation-row total">
+                            <span>Total</span>
+                            <span>₹{{ total_amount|floatformat:2 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="security-badge">
+                        <p>
+                            <i class="fas fa-lock security-icon"></i>
+                            Secure Checkout - All payments are encrypted
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function selectPaymentMethod(method) {
+    const emiSelection = document.getElementById('emi-selection');
+    const emiPlanRadios = document.querySelectorAll('input[name="emi_plan"]');
+    
+    // Remove selected class from all options
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Add selected class to the clicked option
+    const selectedLabel = document.getElementById(`${method}-label`);
+    if (selectedLabel) {
+        selectedLabel.classList.add('selected');
+    }
+    
+    if (method === 'emi') {
+        // Show EMI selection with animation
+        emiSelection.style.display = 'block';
+        emiPlanRadios.forEach(radio => radio.required = true);
+        
+        // Auto-select first option if none selected
+        if (!Array.from(emiPlanRadios).some(r => r.checked)) {
+            emiPlanRadios[0].checked = true;
+        }
+    } else {
+        // Hide EMI selection
+        emiSelection.style.display = 'none';
+        emiPlanRadios.forEach(radio => {
+            radio.required = false;
+            radio.checked = false;
+        });
+    }
+}
+
+// Form validation
+document.getElementById('payment-form').addEventListener('submit', function(e) {
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+    
+    if (!paymentMethod) {
+        e.preventDefault();
+        alert('Please select a payment method');
+        return false;
+    }
+    
+    if (paymentMethod.value === 'emi') {
+        const emiPlan = document.querySelector('input[name="emi_plan"]:checked');
+        if (!emiPlan) {
+            e.preventDefault();
+            alert('Please select an EMI plan');
+            return false;
+        }
+    }
+    
+    return true;
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
+    if (selectedMethod) {
+        selectPaymentMethod(selectedMethod.value);
+    }
+    
+    // Add event listeners to radio buttons
+    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            selectPaymentMethod(this.value);
+        });
+    });
+});
+</script>
+{% endblock %}

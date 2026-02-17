@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="cashify-checkout" style="padding-top: 5rem; padding-bottom: 3rem; background: #f8f9fa;">
+    <div class="container" style="max-width: 1320px;">
+        <div class="checkout-header" style="margin-bottom: 2rem;">
+            <h1 style="font-size: 1.75rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">
+                <i class="fas fa-credit-card"></i> Secure Checkout
+            </h1>
+            <p style="color: #64748b; margin: 0;">Complete your purchase securely</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                {% if is_buy_now %}
+                <div class="alert alert-info" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; color: #1e40af;">
+                    <i class="fas fa-bolt"></i> Buy Now checkout for a single item
+                </div>
+                {% endif %}
+
+                <div class="checkout-card" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 2rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0;">Product Summary</h2>
+                        <span style="color: #64748b; font-size: 0.9rem;">Delivery by {% now "M d" %}</span>
+                    </div>
+
+                    {% if is_buy_now and buy_now_product %}
+                        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 1.5rem;">
+                            <div>
+                                {% if buy_now_product.images.first %}
+                                    <img src="{{ buy_now_product.images.first.image.url }}" alt="{{ buy_now_product.name }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+                                {% else %}
+                                    <div style="width: 120px; height: 120px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-box" style="font-size: 2rem; color: #94a3b8;"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.1rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">{{ buy_now_product.name }}</h3>
+                                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.75rem;">{{ buy_now_product.category|title }}</p>
+                                
+                                {% if buy_now_options %}
+                                <div style="margin: 0.75rem 0; padding: 0.75rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                    <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #475569; font-weight: 600;">Selected Options:</p>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                        <span style="background: #fff; padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid #e2e8f0; color: #475569;">
+                                            <i class="fas fa-layer-group" style="color: #2563eb;"></i> {{ buy_now_options.condition|default:"Like New"|title }}
+                                        </span>
+                                        <span style="background: #fff; padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid #e2e8f0; color: #475569;">
+                                            <i class="fas fa-hdd" style="color: #2563eb;"></i> {{ buy_now_options.storage|default:"64GB"|upper }}
+                                        </span>
+                                        <span style="background: #fff; padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.85rem; border: 1px solid #e2e8f0; color: #475569;">
+                                            <i class="fas fa-palette" style="color: #2563eb;"></i> {{ buy_now_options.color|default:"Black" }}
+                                        </span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                                    {% if buy_now_product.condition_grade == 'new' %}
+                                        <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;">Like New</span>
+                                    {% elif buy_now_product.condition_grade == 'excellent' %}
+                                        <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;">Excellent</span>
+                                    {% else %}
+                                        <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;">Good</span>
+                                    {% endif %}
+                                    <span style="background: #dcfce7; color: #166534; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;">
+                                        <i class="fas fa-check-circle"></i> Certified
+                                    </span>
+                                </div>
+                                <div style="padding: 0.5rem 0.75rem; background: #eff6ff; border-radius: 6px; color: #1e40af; font-size: 0.85rem; display: inline-flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
+                                    <i class="fas fa-shield-alt"></i> 7-Day Testing Warranty
+                                </div>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0.75rem 0;">${{ total_price }}</p>
+                                <p style="color: #64748b; font-size: 0.85rem; margin: 0.25rem 0;">
+                                    <i class="fas fa-headset"></i> Support: support@certibuy.com
+                                </p>
+                                <p style="color: #64748b; font-size: 0.85rem; margin: 0.25rem 0;">
+                                    <i class="fas fa-undo"></i> Return policy applies. <a href="{% url 'core:return_policy' %}" style="color: #2563eb; text-decoration: none; font-weight: 500;">Read policy</a>
+                                </p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div style="display: grid; gap: 1rem;">
+                            {% for item in cart_items %}
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0;">
+                                <div>
+                                    <h3 style="font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">{{ item.product.name }}</h3>
+                                    <p style="color: #64748b; font-size: 0.9rem; margin: 0;">Qty {{ item.quantity }} × ${{ item.price }}</p>
+                                </div>
+                                <strong style="color: #1e293b; font-size: 1.1rem;">${{ item.total_price }}</strong>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+                        <div>
+                            <span style="font-weight: 600; color: #1e293b; display: block; margin-bottom: 0.25rem;">Warranty Reminder</span>
+                            <p style="color: #64748b; font-size: 0.85rem; margin: 0;">Covered by 7-Day Testing Warranty</p>
+                        </div>
+                        <div>
+                            <span style="font-weight: 600; color: #1e293b; display: block; margin-bottom: 0.25rem;">Return Policy</span>
+                            <p style="color: #64748b; font-size: 0.85rem; margin: 0;">Easy return requests within policy window</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkout-card" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 2rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem;">Trust & Security</h3>
+                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.25rem;">Secure checkout, certified inspections, and money-back assurance.</p>
+                    
+                    <div style="display: grid; gap: 0.75rem; margin-bottom: 1.25rem;">
+                        <span style="background: #f8fafc; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; color: #475569; border: 1px solid #e2e8f0;">
+                            <i class="fas fa-lock" style="color: #2563eb;"></i> Secure checkout
+                        </span>
+                        <span style="background: #f8fafc; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; color: #475569; border: 1px solid #e2e8f0;">
+                            <i class="fas fa-user-check" style="color: #16a34a;"></i> Certified inspection
+                        </span>
+                        <span style="background: #f8fafc; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; color: #475569; border: 1px solid #e2e8f0;">
+                            <i class="fas fa-hand-holding-usd" style="color: #f59e0b;"></i> Money-back guarantee
+                        </span>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; align-items: center; padding: 1rem; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
+                        <i class="fas fa-lock" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #dcfce7; color: #16a34a; border-radius: 50%; font-size: 1.1rem;"></i>
+                        <div>
+                            <strong style="color: #166534; display: block; margin-bottom: 0.25rem;">Secure Checkout</strong>
+                            <p style="color: #16a34a; font-size: 0.85rem; margin: 0;">Encrypted checkout flow with verified inspection assurance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <form method="post" style="background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 2rem;">
+                    {% csrf_token %}
+                    <input type="hidden" name="checkout_token" value="{{ checkout_token }}">
+
+                    <h2 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.25rem;">Delivery Details</h2>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="grid-column: 1 / -1;">
+                            <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-size: 0.9rem; font-weight: 500;">Full Name</label>
+                            <input type="text" name="full_name" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; color: #1e293b; background: #fff;">
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-size: 0.9rem; font-weight: 500;">Phone</label>
+                            <input type="tel" name="phone" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; color: #1e293b; background: #fff;">
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-size: 0.9rem; font-weight: 500;">Address</label>
+                            <input type="text" name="address" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; color: #1e293b; background: #fff;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-size: 0.9rem; font-weight: 500;">City</label>
+                            <input type="text" name="city" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; color: #1e293b; background: #fff;">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; color: #475569; font-size: 0.9rem; font-weight: 500;">Postal Code</label>
+                            <input type="text" name="postal_code" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.95rem; color: #1e293b; background: #fff;">
+                        </div>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0;">
+
+                    <h2 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.25rem;">Payment</h2>
+                    <div style="display: flex; gap: 1rem; align-items: center; padding: 1rem; border: 1px dashed #cbd5e1; border-radius: 8px; color: #64748b; margin-bottom: 1.5rem;">
+                        <i class="fas fa-credit-card" style="font-size: 1.5rem; color: #94a3b8;"></i>
+                        <div>
+                            <strong style="color: #475569; display: block; margin-bottom: 0.25rem;">Payment Options</strong>
+                            <p style="font-size: 0.85rem; margin: 0;">Card, wallet, or bank transfer will appear here in production.</p>
+                        </div>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0;">
+
+                    <h2 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1.25rem;">Order Summary</h2>
+                    <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 0.95rem;">
+                            <span>Subtotal</span>
+                            <span>${{ total_price }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 0.95rem;">
+                            <span>Delivery</span>
+                            <span style="color: #16a34a; font-weight: 600;">Free</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 0.95rem;">
+                            <span>Warranty</span>
+                            <span style="color: #16a34a; font-weight: 600;">Included</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: #1e293b; font-size: 1.1rem; font-weight: 700; padding-top: 0.75rem; margin-top: 0.5rem; border-top: 1px solid #e2e8f0;">
+                            <span>Total Payable</span>
+                            <span>${{ total_price }}</span>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+                        <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #475569;">
+                            <i class="fas fa-headset" style="color: #2563eb;"></i> Support: support@certibuy.com
+                        </p>
+                        <p style="margin: 0; font-size: 0.85rem; color: #475569;">
+                            <i class="fas fa-phone" style="color: #2563eb;"></i> Helpline: +1 (800) 555-0199
+                        </p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                        {% if is_buy_now and buy_now_product %}
+                        <a href="{{ buy_now_product.get_absolute_url }}" class="btn btn-outline-secondary" style="border: 1px solid #cbd5e1; color: #475569; padding: 0.75rem; border-radius: 8px; text-decoration: none; text-align: center; font-weight: 600;">
+                            Back to Product
+                        </a>
+                        {% else %}
+                        <a href="{% url 'core:cart' %}" class="btn btn-outline-secondary" style="border: 1px solid #cbd5e1; color: #475569; padding: 0.75rem; border-radius: 8px; text-decoration: none; text-align: center; font-weight: 600;">
+                            Back to Cart
+                        </a>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary" style="background: #2563eb; border: none; color: #fff; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            Place Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .cashify-checkout {
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .cashify-checkout input:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .cashify-checkout .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+    }
+
+    .cashify-checkout .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .cashify-checkout .btn-outline-secondary:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+    }
+
+    @media (max-width: 991px) {
+        .cashify-checkout .row {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .cashify-checkout h1 {
+            font-size: 1.5rem !important;
+        }
+        
+        .cashify-checkout h2 {
+            font-size: 1.1rem !important;
+        }
+        
+        .cashify-checkout .checkout-card {
+            padding: 1.5rem !important;
+        }
+    }
+</style>
+{% endblock %}

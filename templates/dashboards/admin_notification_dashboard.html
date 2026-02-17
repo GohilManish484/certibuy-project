@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Admin Notifications - CertiBuy{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_notifications.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="section-premium admin-notifications">
+    <div class="container-premium admin-notifications__container">
+        <div class="admin-notifications__header">
+            <div>
+                <h1><i class="fas fa-bell"></i> Admin Notification Dashboard</h1>
+                <p>Operational alerts and system events across the platform.</p>
+            </div>
+            <div class="admin-notifications__header-meta">
+                <span class="header-meta__pill">
+                    Auto refresh: 30s
+                </span>
+            </div>
+        </div>
+
+        <div class="admin-notifications__summary">
+            <div class="summary-card">
+                <div class="summary-card__label">New Orders Today</div>
+                <div class="summary-card__value" id="summaryNewOrders">{{ summary.new_orders_today }}</div>
+            </div>
+            <div class="summary-card summary-card--warning">
+                <div class="summary-card__label">Pending Refunds</div>
+                <div class="summary-card__value" id="summaryPendingRefunds">{{ summary.pending_refunds }}</div>
+            </div>
+            <div class="summary-card summary-card--danger">
+                <div class="summary-card__label">Failed Payments</div>
+                <div class="summary-card__value" id="summaryFailedPayments">{{ summary.failed_payments }}</div>
+            </div>
+            <div class="summary-card summary-card--info">
+                <div class="summary-card__label">Unread Notifications</div>
+                <div class="summary-card__value" id="summaryUnread">{{ summary.unread_notifications }}</div>
+            </div>
+            <div class="summary-card summary-card--danger">
+                <div class="summary-card__label">Low Stock Alerts</div>
+                <div class="summary-card__value" id="summaryLowStock">{{ summary.low_stock_alerts }}</div>
+            </div>
+        </div>
+
+        <form id="notificationFilters" class="notification-filters" method="get">
+            <div class="filter-group">
+                <label for="filterType">Type</label>
+                <select id="filterType" name="type">
+                    <option value="">All types</option>
+                    {% for value, label in type_choices %}
+                    <option value="{{ value }}" {% if filters.type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterPriority">Priority</label>
+                <select id="filterPriority" name="priority">
+                    <option value="">All priorities</option>
+                    {% for value, label in priority_choices %}
+                    <option value="{{ value }}" {% if filters.priority == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterStartDate">From</label>
+                <input type="date" id="filterStartDate" name="start_date" value="{{ filters.start_date }}">
+            </div>
+            <div class="filter-group">
+                <label for="filterEndDate">To</label>
+                <input type="date" id="filterEndDate" name="end_date" value="{{ filters.end_date }}">
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn-primary-custom">Apply</button>
+                <button type="button" class="btn-secondary-custom" id="filterReset">Reset</button>
+            </div>
+        </form>
+
+        <div class="notification-panel">
+            <div class="notification-panel__header">
+                <h2>Latest Notifications</h2>
+                <span class="panel-count" id="notificationCount">{{ notifications|length }} items</span>
+            </div>
+            <div id="notificationList" class="notification-list">
+                {% if notifications %}
+                    {% for item in notifications %}
+                    <div class="notification-item {% if not item.is_read %}notification-item--unread{% endif %}">
+                        <div class="notification-item__icon">
+                            {% if item.type == 'order' %}
+                                <i class="fas fa-shopping-bag"></i>
+                            {% elif item.type == 'payment' %}
+                                <i class="fas fa-credit-card"></i>
+                            {% elif item.type == 'refund' %}
+                                <i class="fas fa-undo"></i>
+                            {% elif item.type == 'inspection' %}
+                                <i class="fas fa-clipboard-check"></i>
+                            {% elif item.type == 'inventory' %}
+                                <i class="fas fa-boxes"></i>
+                            {% else %}
+                                <i class="fas fa-exclamation-triangle"></i>
+                            {% endif %}
+                        </div>
+                        <div class="notification-item__content">
+                            <div class="notification-item__header">
+                                <div>
+                                    <h3>{{ item.title }}</h3>
+                                    <p>{{ item.message }}</p>
+                                </div>
+                                <div class="notification-item__meta">
+                                    <span class="priority-badge priority-{{ item.priority }}">{{ item.get_priority_display }}</span>
+                                    <span class="timestamp">{{ item.created_at|date:"Y-m-d H:i" }}</span>
+                                </div>
+                            </div>
+                            <div class="notification-item__actions">
+                                {% if item.related_order %}
+                                <a class="btn-secondary-custom" href="/admin/orders/order/{{ item.related_order.id }}/change/" target="_blank" rel="noopener">View Order</a>
+                                {% endif %}
+                                {% if not item.is_read %}
+                                <button class="btn-primary-custom mark-read-btn" data-id="{{ item.id }}">Mark as read</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="notification-empty">No notifications match the selected filters.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<form id="csrfTokenForm" style="display: none;">{% csrf_token %}</form>
+
+<script>
+    const dataUrl = "{% url 'core:admin-notification-data' %}";
+    const markReadUrl = "{% url 'core:admin-notification-mark-read' %}";
+    const notificationList = document.getElementById('notificationList');
+    const notificationCount = document.getElementById('notificationCount');
+    const filterForm = document.getElementById('notificationFilters');
+    const filterReset = document.getElementById('filterReset');
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            return parts.pop().split(';').shift();
+        }
+        return '';
+    }
+
+    function getFilters() {
+        const params = new URLSearchParams();
+        const type = document.getElementById('filterType').value;
+        const priority = document.getElementById('filterPriority').value;
+        const startDate = document.getElementById('filterStartDate').value;
+        const endDate = document.getElementById('filterEndDate').value;
+
+        if (type) params.append('type', type);
+        if (priority) params.append('priority', priority);
+        if (startDate) params.append('start_date', startDate);
+        if (endDate) params.append('end_date', endDate);
+
+        return params;
+    }
+
+    function updateSummary(summary) {
+        document.getElementById('summaryNewOrders').textContent = summary.new_orders_today;
+        document.getElementById('summaryPendingRefunds').textContent = summary.pending_refunds;
+        document.getElementById('summaryFailedPayments').textContent = summary.failed_payments;
+        document.getElementById('summaryUnread').textContent = summary.unread_notifications;
+        document.getElementById('summaryLowStock').textContent = summary.low_stock_alerts;
+    }
+
+    function getTypeIcon(type) {
+        const map = {
+            order: 'fa-shopping-bag',
+            payment: 'fa-credit-card',
+            refund: 'fa-undo',
+            inspection: 'fa-clipboard-check',
+            inventory: 'fa-boxes',
+            system: 'fa-exclamation-triangle',
+        };
+        return map[type] || 'fa-bell';
+    }
+
+    function createNotificationItem(item) {
+        const wrapper = document.createElement('div');
+        wrapper.className = `notification-item ${item.is_read ? '' : 'notification-item--unread'}`.trim();
+
+        const icon = document.createElement('div');
+        icon.className = 'notification-item__icon';
+        const iconEl = document.createElement('i');
+        iconEl.className = `fas ${getTypeIcon(item.type)}`;
+        icon.appendChild(iconEl);
+
+        const content = document.createElement('div');
+        content.className = 'notification-item__content';
+
+        const header = document.createElement('div');
+        header.className = 'notification-item__header';
+
+        const headerLeft = document.createElement('div');
+        const title = document.createElement('h3');
+        title.textContent = item.title;
+        const message = document.createElement('p');
+        message.textContent = item.message;
+        headerLeft.appendChild(title);
+        headerLeft.appendChild(message);
+
+        const meta = document.createElement('div');
+        meta.className = 'notification-item__meta';
+        const priority = document.createElement('span');
+        priority.className = `priority-badge priority-${item.priority}`;
+        priority.textContent = item.priority.charAt(0).toUpperCase() + item.priority.slice(1);
+        const timestamp = document.createElement('span');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = item.created_at_display;
+        meta.appendChild(priority);
+        meta.appendChild(timestamp);
+
+        header.appendChild(headerLeft);
+        header.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'notification-item__actions';
+
+        if (item.related_order_id) {
+            const viewOrder = document.createElement('a');
+            viewOrder.className = 'btn-secondary-custom';
+            viewOrder.href = `/admin/orders/order/${item.related_order_id}/change/`;
+            viewOrder.target = '_blank';
+            viewOrder.rel = 'noopener';
+            viewOrder.textContent = 'View Order';
+            actions.appendChild(viewOrder);
+        }
+
+        if (!item.is_read) {
+            const markRead = document.createElement('button');
+            markRead.className = 'btn-primary-custom mark-read-btn';
+            markRead.dataset.id = item.id;
+            markRead.textContent = 'Mark as read';
+            actions.appendChild(markRead);
+        }
+
+        content.appendChild(header);
+        content.appendChild(actions);
+
+        wrapper.appendChild(icon);
+        wrapper.appendChild(content);
+
+        return wrapper;
+    }
+
+    function renderNotifications(items) {
+        notificationList.innerHTML = '';
+        if (!items.length) {
+            const empty = document.createElement('div');
+            empty.className = 'notification-empty';
+            empty.textContent = 'No notifications match the selected filters.';
+            notificationList.appendChild(empty);
+            notificationCount.textContent = '0 items';
+            return;
+        }
+
+        items.forEach(item => notificationList.appendChild(createNotificationItem(item)));
+        notificationCount.textContent = `${items.length} items`;
+    }
+
+    function fetchNotifications() {
+        const params = getFilters();
+        const url = params.toString() ? `${dataUrl}?${params.toString()}` : dataUrl;
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.json())
+            .then(payload => {
+                renderNotifications(payload.notifications || []);
+                if (payload.summary) {
+                    updateSummary(payload.summary);
+                }
+            })
+            .catch(() => {
+                notificationCount.textContent = 'Refresh failed';
+            });
+    }
+
+    function markAsRead(notificationId) {
+        const csrfToken = getCookie('csrftoken');
+        const formData = new FormData();
+        formData.append('notification_id', notificationId);
+
+        fetch(markReadUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(() => fetchNotifications())
+        .catch(() => fetchNotifications());
+    }
+
+    notificationList.addEventListener('click', event => {
+        if (event.target.classList.contains('mark-read-btn')) {
+            event.preventDefault();
+            const notificationId = event.target.dataset.id;
+            if (notificationId) {
+                markAsRead(notificationId);
+            }
+        }
+    });
+
+    filterForm.addEventListener('submit', event => {
+        event.preventDefault();
+        fetchNotifications();
+    });
+
+    filterReset.addEventListener('click', () => {
+        filterForm.reset();
+        fetchNotifications();
+    });
+
+    setInterval(fetchNotifications, 30000);
+</script>
+{% endblock %}

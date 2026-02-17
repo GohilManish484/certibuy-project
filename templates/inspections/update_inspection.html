@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Update Inspection - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 5rem; padding-bottom: 3rem;">
+    <div class="container-premium" style="max-width: 900px;">
+        
+        <h1 style="color: var(--text-primary); margin-bottom: 2rem;">
+            <i class="fas fa-clipboard-check"></i> Update Inspection Report
+        </h1>
+        
+        <div class="auth-card">
+            <h2 style="color: var(--text-primary); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+                Inspection #{{ inspection.id }}
+            </h2>
+            
+            <div style="background: rgba(37, 99, 235, 0.1); border: 1px solid var(--accent-blue); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+                <p style="color: var(--text-primary); margin-bottom: 0.5rem;">
+                    <strong>Submission:</strong> {{ inspection.submission.product_name }}
+                </p>
+                <p style="color: var(--text-primary); margin-bottom: 0.5rem;">
+                    <strong>Seller:</strong> {{ inspection.submission.seller.username }}
+                </p>
+                <p style="color: var(--text-primary); margin: 0;">
+                    <strong>Inspection Date:</strong> {{ inspection.inspection_date|date:"F d, Y" }}
+                </p>
+            </div>
+            
+            <form method="post" style="margin-top: 2rem;">
+                {% csrf_token %}
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem;">
+                        <i class="fas fa-star"></i> Condition Grade
+                    </label>
+                    <select name="condition_grade" required style="width: 100%; padding: 0.9rem 1.2rem; background: rgba(30, 41, 59, 0.8); border: 2px solid var(--border-color); border-radius: 10px; color: var(--text-primary); font-size: 0.95rem;">
+                        <option value="A" {% if inspection.condition_grade == 'A' %}selected{% endif %}>Grade A - Excellent</option>
+                        <option value="B" {% if inspection.condition_grade == 'B' %}selected{% endif %}>Grade B - Good</option>
+                        <option value="C" {% if inspection.condition_grade == 'C' %}selected{% endif %}>Grade C - Fair</option>
+                        <option value="D" {% if inspection.condition_grade == 'D' %}selected{% endif %}>Grade D - Poor</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem;">
+                        <i class="fas fa-clipboard-list"></i> Inspection Notes
+                    </label>
+                    <textarea name="inspection_notes" rows="6" required style="width: 100%; padding: 0.9rem 1.2rem; background: rgba(30, 41, 59, 0.8); border: 2px solid var(--border-color); border-radius: 10px; color: var(--text-primary); font-size: 0.95rem; font-family: 'Inter', sans-serif; resize: vertical;">{{ inspection.inspection_notes }}</textarea>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; color: var(--text-primary); font-weight: 600; margin-bottom: 0.5rem;">
+                        <i class="fas fa-tasks"></i> Status
+                    </label>
+                    <select name="status" required style="width: 100%; padding: 0.9rem 1.2rem; background: rgba(30, 41, 59, 0.8); border: 2px solid var(--border-color); border-radius: 10px; color: var(--text-primary); font-size: 0.95rem;">
+                        <option value="pending" {% if inspection.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="in_progress" {% if inspection.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                        <option value="completed" {% if inspection.status == 'completed' %}selected{% endif %}>Completed</option>
+                    </select>
+                </div>
+                
+                <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid #f59e0b; border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <p style="color: var(--text-primary); margin: 0;">
+                        <i class="fas fa-info-circle" style="color: #f59e0b;"></i>
+                        <strong>Note:</strong> Marking inspection as "Completed" will update the submission status automatically.
+                    </p>
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{% url 'inspections:detail' inspection.id %}" class="btn-secondary-custom" style="flex: 1; text-align: center; padding: 1rem; border-radius: 10px; text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-arrow-left"></i>&nbsp; Cancel
+                    </a>
+                    <button type="submit" class="btn-primary-custom" style="flex: 1; padding: 1rem; border-radius: 10px; font-size: 1.1rem; font-weight: 600;">
+                        <i class="fas fa-save"></i>&nbsp; Update Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

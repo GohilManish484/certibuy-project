@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Contact CertiBuy{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 3rem 0; color: white; margin-bottom: 3rem;">
+    <div class="container-wide">
+        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Get in Touch</h1>
+        <p style="font-size: 1.1rem;">We'd love to hear from you. Reach out anytime!</p>
+    </div>
+</div>
+
+<div class="container-wide">
+    <div class="row">
+        <div class="col-lg-4">
+            <div style="background: var(--light); border: 1px solid var(--border); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <h5 style="color: var(--dark); font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-envelope" style="color: var(--primary); margin-right: 0.5rem;"></i> Email</h5>
+                <p><a href="mailto:support@certibuy.com" style="color: var(--primary); text-decoration: none; font-weight: 600;">support@certibuy.com</a></p>
+                <p style="color: #999; font-size: 0.85rem;">Response time: within 24 hours</p>
+            </div>
+
+            <div style="background: var(--light); border: 1px solid var(--border); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <h5 style="color: var(--dark); font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-phone" style="color: var(--primary); margin-right: 0.5rem;"></i> Phone</h5>
+                <p><a href="tel:+1234567890" style="color: var(--primary); text-decoration: none; font-weight: 600;">+1 (234) 567-890</a></p>
+                <p style="color: #999; font-size: 0.85rem;">Mon-Fri, 9AM-6PM EST</p>
+            </div>
+
+            <div style="background: var(--light); border: 1px solid var(--border); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <h5 style="color: var(--dark); font-weight: 700; margin-bottom: 1rem;"><i class="fas fa-map-marker-alt" style="color: var(--primary); margin-right: 0.5rem;"></i> Address</h5>
+                <p style="color: #666; font-size: 0.95rem;">
+                    CertiBuy Inc.<br>
+                    123 Commerce Street<br>
+                    New York, NY 10001
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div style="background: var(--light); border: 1px solid var(--border); padding: 2.5rem; border-radius: 8px;">
+                <h3 style="color: var(--dark); font-weight: 700; margin-bottom: 2rem;">Send us a Message</h3>
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="color: var(--dark); font-weight: 600; display: block; margin-bottom: 0.5rem;">Full Name</label>
+                        <input type="text" name="name" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="color: var(--dark); font-weight: 600; display: block; margin-bottom: 0.5rem;">Email Address</label>
+                        <input type="email" name="email" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem;">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="color: var(--dark); font-weight: 600; display: block; margin-bottom: 0.5rem;">Subject</label>
+                        <input type="text" name="subject" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem;">
+                    </div>
+                    <div style="margin-bottom: 2rem;">
+                        <label style="color: var(--dark); font-weight: 600; display: block; margin-bottom: 0.5rem;">Message</label>
+                        <textarea name="message" rows="6" required style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; font-family: inherit;"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1rem;">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

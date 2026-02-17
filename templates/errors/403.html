@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Access Denied - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 6rem; padding-bottom: 6rem; text-align: center; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+    <div class="container-premium" style="max-width: 700px;">
+        <div class="auth-card" style="padding: 3rem;">
+            
+            <!-- Error Icon -->
+            <div style="font-size: 4rem; margin-bottom: 2rem; color: var(--danger);">
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <!-- Error Title -->
+            <h1 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 2.5rem;">
+                Access Denied
+            </h1>
+            
+            <!-- Error Message -->
+            <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.8;">
+                You do not have permission to access this page.
+            </p>
+            
+            <!-- Required Role Info -->
+            {% if required_roles %}
+            <div style="background: linear-gradient(135deg, rgba(255, 100, 100, 0.1), rgba(255, 150, 100, 0.1)); border-left: 4px solid var(--danger); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px;">
+                <p style="color: var(--text-primary); margin: 0; font-weight: 600;">
+                    <i class="fas fa-info-circle"></i> Required Role:
+                </p>
+                <p style="color: var(--text-secondary); margin: 0.5rem 0 0 0; text-transform: capitalize;">
+                    {{ required_role }}
+                </p>
+            </div>
+            {% endif %}
+            
+            <!-- User Info -->
+            {% if user.is_authenticated %}
+            <div style="background: rgba(37, 99, 235, 0.1); border-left: 4px solid var(--accent-blue); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px;">
+                <p style="color: var(--text-primary); margin: 0; font-weight: 600;">
+                    <i class="fas fa-user"></i> Your Account:
+                </p>
+                <p style="color: var(--text-secondary); margin: 0.5rem 0 0 0;">
+                    {{ user.username }} ({{ user.get_role_display }})
+                </p>
+            </div>
+            {% endif %}
+            
+            <!-- Actions -->
+            <div style="display: flex; gap: 1rem; flex-direction: column;">
+                
+                <!-- Back Button -->
+                <a href="javascript:history.back()" class="btn-secondary-custom" style="display: inline-block; padding: 1rem 2rem; border-radius: 10px; text-align: center; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </a>
+                
+                <!-- Home Button -->
+                <a href="{% url 'core:home' %}" class="btn-primary-custom" style="display: inline-block; padding: 1rem 2rem; border-radius: 10px; text-align: center; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                
+                <!-- Logout Button (if authenticated) -->
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'accounts:logout' %}" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-secondary-custom" style="width: 100%; padding: 1rem 2rem; border-radius: 10px; font-weight: 600; border: none; cursor: pointer;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+                {% else %}
+                <!-- Login Button (if anonymous) -->
+                <a href="{% url 'accounts:login' %}" class="btn-secondary-custom" style="display: inline-block; padding: 1rem 2rem; border-radius: 10px; text-align: center; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                {% endif %}
+            </div>
+            
+            <!-- Help Text -->
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">
+                    <i class="fas fa-question-circle"></i>
+                    If you believe this is a mistake, please <a href="{% url 'core:contact' %}" style="color: var(--accent-blue); text-decoration: underline;">contact support</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

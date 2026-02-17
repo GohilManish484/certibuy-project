@@ -1,0 +1,293 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CertiBuy - Certified Products Marketplace{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/premium.css' %}">
+    {% if user.is_authenticated and user.role == 'customer' and request.resolver_match.view_name == 'core:shop' %}
+    <link rel="stylesheet" href="{% static 'css/cashify.css' %}">
+    {% endif %}
+    {% block extra_css %}{% endblock %}
+</head>
+<body{% if user.is_authenticated and user.role == 'customer' and request.resolver_match.view_name == 'core:shop' %} class="cb-customer"{% endif %}>
+    <!-- Navbar -->
+    {% if user.is_authenticated and user.role == 'customer' and request.resolver_match.view_name == 'core:shop' %}
+    <nav class="cb-nav">
+        <div class="cb-nav-inner">
+            <div class="cb-nav-left">
+                <a class="cb-brand" href="{% url 'core:home' %}">
+                    <img src="{% static 'images/logo.png' %}" 
+         alt="CertiBuy Logo"
+         style="height:45px; width:auto;"> <span>CertiBuy</span>
+                </a>
+            </div>
+
+            <div class="cb-nav-center">
+                <form class="cb-search" action="{% url 'core:shop' %}" method="get">
+                    <i class="fas fa-search"></i>
+                    <input
+                        type="text"
+                        name="search"
+                        id="cbSearchInput"
+                        placeholder="Search for mobiles, laptops, accessories"
+                        autocomplete="off"
+                        data-suggest-url="{% url 'core:search_suggestions' %}"
+                    >
+                    <button type="submit" class="cb-btn cb-btn-primary">Search</button>
+                    <div class="cb-suggest" id="cbSuggest"></div>
+                </form>
+            </div>
+
+            <div class="cb-nav-right">
+                <a href="{% url 'accounts:wishlist' %}" class="cb-icon-btn" aria-label="Wishlist">
+                    <i class="far fa-heart"></i>
+                </a>
+                {% with cart_count=request.session.cart_count|default:0 %}
+                <a href="{% url 'core:cart' %}" class="cb-icon-btn" aria-label="Cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    {% if cart_count|add:'0' > 0 %}<span class="cb-badge">{{ cart_count|add:'0' }}</span>{% endif %}
+                </a>
+                {% endwith %}
+
+                {% if user.profile_photo %}
+                <button class="cb-profile-toggle cb-profile-avatar" data-dropdown="profile" aria-label="Profile">
+                    <img src="{{ user.profile_photo.url }}" alt="{{ user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </button>
+                {% else %}
+                <button class="cb-profile-toggle" data-dropdown="profile" aria-label="Profile">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+                {% endif %}
+                {% include "components/profile_dropdown_component.html" %}
+            </div>
+        </div>
+    </nav>
+    {% else %}
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Logo/Brand -->
+            <a class="navbar-brand" href="{% url 'core:home' %}">
+                <img src="{% static 'images/logo.png' %}" 
+         alt="CertiBuy Logo"
+         style="height:60px; width:auto;"> <span>CertiBuy</span>
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="navbar-toggle" id="navbarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <ul class="nav-links" id="navLinks">
+                <li><a href="{% url 'core:home' %}">Home</a></li>
+                <li><a href="{% url 'core:shop' %}">Shop</a></li>
+                
+                {% if user.is_authenticated %}
+                    
+                    <!-- Customer Navigation -->
+                    {% if user.role == 'customer' %}
+                        {% with cart_count=request.session.cart_count|default:0 %}
+                        <li><a href="{% url 'core:cart' %}"><i class="fas fa-shopping-cart"></i> Cart {% if cart_count|add:'0' > 0 %}<span class="cart-badge" id="cartCountBadge">{{ cart_count|add:'0' }}</span>{% endif %}</a></li>
+                        {% endwith %}
+                        <li><a href="{% url 'core:customer-dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    {% endif %}
+                    
+                    <!-- Seller Navigation -->
+                    {% if user.role == 'seller' %}
+                        <li><a href="{% url 'sellers:submit_product' %}">Submit Product</a></li>
+                        <li><a href="{% url 'sellers:my_submissions' %}">My Submissions</a></li>
+                        <li><a href="{% url 'core:seller-dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    {% endif %}
+                    
+                    <!-- Inspector Navigation -->
+                    {% if user.role == 'inspector' %}
+                        <li><a href="{% url 'inspections:list' %}">Assigned Inspections</a></li>
+                        <li><a href="{% url 'core:inspector-dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    {% endif %}
+                    
+                    <!-- Admin Navigation -->
+                    {% if user.is_staff or user.is_superuser %}
+                        <li><a href="{% url 'core:admin-dashboard' %}"><i class="fas fa-chart-line"></i> Admin Dashboard</a></li>
+                        <li><a href="/admin/">Django Admin</a></li>
+                    {% endif %}
+                    
+                {% else %}
+                    <li><a href="{% url 'products:list' %}">Products</a></li>
+                {% endif %}
+                
+                <li><a href="{% url 'core:how_it_works' %}">How It Works</a></li>
+                <li><a href="{% url 'core:contact' %}">Contact</a></li>
+            </ul>
+
+            <!-- Right Side - Auth/User Actions -->
+            <div class="navbar-actions">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}" class="nav-profile" title="{{ user.username }} - {{ user.get_role_display }}">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                    <form method="post" action="{% url 'accounts:logout' %}" style="display: inline; margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-btn nav-btn-primary" style="background: linear-gradient(135deg, var(--accent-blue), var(--light-blue)); color: white; border: none; cursor: pointer;">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-btn nav-btn-secondary">Sign In</a>
+                    <a href="{% url 'accounts:register' %}" class="nav-btn nav-btn-primary">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container-premium">
+            <!-- Footer Top -->
+            <div class="footer-top">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem;">
+                    <div>
+                        <a class="navbar-brand" href="{% url 'core:home' %}" style="margin-bottom: 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                            <img src="{% static 'images/logo.png' %}" 
+                     alt="CertiBuy Logo"
+                     style="height:45px; width:auto;"> <span style="font-size: 1.5rem; font-weight: 800;">CertiBuy</span>
+                        </a>
+                        <p style="color: var(--text-secondary); margin-top: 1rem; line-height: 1.8;">Certified, Tested, Trusted — Selling Second-Hand Products.</p>
+                        <div class="footer-trust-badges">
+                            <div class="footer-trust-badge">
+                                <i class="fas fa-shield-check"></i>
+                                <span>Verified Sellers</span>
+                            </div>
+                            <div class="footer-trust-badge">
+                                <i class="fas fa-certificate"></i>
+                                <span>100% Authentic</span>
+                            </div>
+                        </div>
+                        <div class="footer-social">
+                            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <div>
+                        <h5>Quick Links</h5>
+                        <ul>
+                            <li><a href="{% url 'core:home' %}"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>Home</a></li>
+                            <li><a href="{% url 'core:shop' %}"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>Shop</a></li>
+                            <li><a href="{% url 'core:how_it_works' %}"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>How It Works</a></li>
+                            <li><a href="{% url 'core:about' %}"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>About Us</a></li>
+                            <li><a href="{% url 'core:faq' %}"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="{% url 'core:contact' %}"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>Contact Us</a></li>
+                            <li><a href="{% url 'core:return_policy' %}"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>Return Policy</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>Privacy Policy</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>Terms of Service</a></li>
+                            <li><a href="#"><i class="fas fa-angle-right" style="margin-right: 0.5rem; font-size: 0.8rem;"></i>Shipping Info</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5>Trust & Security</h5>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.8;">All products are inspected and certified by professionals.</p>
+                        <div class="trust-indicators">
+                            <div class="trust-icon">
+                                <i class="fas fa-lock"></i>
+                                <span>Secure Payments</span>
+                            </div>
+                            <div class="trust-icon">
+                                <i class="fas fa-undo"></i>
+                                <span>Easy Returns</span>
+                            </div>
+                            <div class="trust-icon">
+                                <i class="fas fa-headset"></i>
+                                <span>24/7 Support</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content container-premium">
+                    <p>&copy; 2026 CertiBuy. All rights reserved. Built with security and trust.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Privacy</a>
+                        <a href="#">Terms</a>
+                        <a href="#">Cookies</a>
+                        <a href="#">Sitemap</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const navbarToggle = document.getElementById('navbarToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        if (navbarToggle) {
+            navbarToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // Close menu when link is clicked
+        if (navLinks) {
+            const navItems = navLinks.querySelectorAll('a');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
+            });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navLinks && !navLinks.contains(e.target) && !navbarToggle.contains(e.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        // Handle window resize
+        function handleResize() {
+            if (window.innerWidth > 768) {
+                if (navLinks) {
+                    navLinks.classList.remove('active');
+                }
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% if user.is_authenticated and user.role == 'customer' %}
+    <script src="{% static 'js/cashify.js' %}"></script>
+    {% endif %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

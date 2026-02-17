@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - {{ order.order_number }} - CertiBuy{% endblock %}
+
+{% block content %}
+<section style="padding-top: 5rem; padding-bottom: 3rem; background: linear-gradient(135deg, #f0fdf4 0%, #dbeafe 100%); min-height: 100vh;">
+    <div class="container" style="max-width: 700px;">
+        <div style="background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 3rem; text-align: center;">
+            <!-- Success Icon -->
+            <div style="margin-bottom: 2rem;">
+                <div style="width: 80px; height: 80px; margin: 0 auto 1rem; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #16a34a;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1 style="font-size: 2rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem 0;">Order Confirmed!</h1>
+                <p style="color: #64748b; font-size: 1.1rem; margin: 0;">Thank you for your purchase</p>
+            </div>
+
+            <!-- Order Details Box -->
+            <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid #e2e8f0;">
+                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 1.5rem;">
+                    <div>
+                        <p style="margin: 0 0 0.5rem 0; color: #64748b; font-size: 0.9rem;">Order Number</p>
+                        <p style="margin: 0; font-size: 1.5rem; font-weight: 700; color: #2563eb;">{{ order.order_number }}</p>
+                    </div>
+                </div>
+                
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0;">
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <p style="margin: 0 0 0.5rem 0; color: #64748b; font-size: 0.85rem;">Order Date</p>
+                        <p style="margin: 0; font-weight: 600; color: #1e293b;">{{ order.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    <div>
+                        <p style="margin: 0 0 0.5rem 0; color: #64748b; font-size: 0.85rem;">Estimated Delivery</p>
+                        <p style="margin: 0; font-weight: 600; color: #1e293b;">{{ order.estimated_delivery|date:"M d, Y" }}</p>
+                    </div>
+                    <div>
+                        <p style="margin: 0 0 0.5rem 0; color: #64748b; font-size: 0.85rem;">Total Amount</p>
+                        <p style="margin: 0; font-weight: 600; color: #1e293b; font-size: 1.1rem;">₹{{ order.total_amount|floatformat:2 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What's Next -->
+            <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 12px; border: 1px solid #bfdbfe; margin-bottom: 2rem;">
+                <h3 style="font-size: 1rem; font-weight: 700; color: #0c4a6e; margin: 0 0 1rem 0;">What's Next?</h3>
+                <div style="display: grid; gap: 0.75rem; text-align: left;">
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex-shrink: 0;">
+                            <div style="width: 32px; height: 32px; background: #0c63e4; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">1</div>
+                        </div>
+                        <div>
+                            <p style="margin: 0 0 0.25rem 0; font-weight: 600; color: #0c4a6e;">Order Confirmed</p>
+                            <p style="margin: 0; color: #0854a0; font-size: 0.9rem;">We've received your order and confirmed the payment</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex-shrink: 0;">
+                            <div style="width: 32px; height: 32px; background: #cbd5e1; color: #64748b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</div>
+                        </div>
+                        <div>
+                            <p style="margin: 0 0 0.25rem 0; font-weight: 600; color: #64748b;">Packing & Inspection</p>
+                            <p style="margin: 0; color: #64748b; font-size: 0.9rem;">Your product is being inspected and safely packed</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex-shrink: 0;">
+                            <div style="width: 32px; height: 32px; background: #cbd5e1; color: #64748b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">3</div>
+                        </div>
+                        <div>
+                            <p style="margin: 0 0 0.25rem 0; font-weight: 600; color: #64748b;">Shipped</p>
+                            <p style="margin: 0; color: #64748b; font-size: 0.9rem;">You'll receive a tracking number when it ships</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex-shrink: 0;">
+                            <div style="width: 32px; height: 32px; background: #cbd5e1; color: #64748b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">4</div>
+                        </div>
+                        <div>
+                            <p style="margin: 0 0 0.25rem 0; font-weight: 600; color: #64748b;">Delivered</p>
+                            <p style="margin: 0; color: #64748b; font-size: 0.9rem;">Your order arrives safely to your address</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefits Box -->
+            <div style="background: #fef2f2; padding: 1.5rem; border-radius: 12px; border: 1px solid #fecaca; margin-bottom: 2rem;">
+                <h3 style="font-size: 1rem; font-weight: 700; color: #991b1b; margin: 0 0 1rem 0;"><i class="fas fa-shield-alt"></i> Your Protection</h3>
+                <div style="display: grid; gap: 0.75rem; text-align: left;">
+                    <p style="margin: 0; color: #b91c1c; font-size: 0.9rem;"><i class="fas fa-check-circle"></i> 7-Day Testing Warranty - Test product thoroughly after delivery</p>
+                    <p style="margin: 0; color: #b91c1c; font-size: 0.9rem;"><i class="fas fa-check-circle"></i> 7-Day Return Window - Easy returns if not satisfied</p>
+                    <p style="margin: 0; color: #b91c1c; font-size: 0.9rem;"><i class="fas fa-check-circle"></i> Money-back Guarantee - Full refund if needed</p>
+                </div>
+            </div>
+
+            <!-- Order Items Summary -->
+            <div style="text-align: left; margin-bottom: 2rem;">
+                <h3 style="font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 1rem 0;">Items Ordered</h3>
+                <div style="display: grid; gap: 0.75rem;">
+                    {% for item in order.items.all %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <div>
+                            <p style="margin: 0 0 0.25rem 0; font-weight: 600; color: #1e293b;">{{ item.product.name }}</p>
+                            <p style="margin: 0; color: #64748b; font-size: 0.85rem;">Qty: {{ item.quantity }}</p>
+                        </div>
+                        <span style="font-weight: 600; color: #1e293b;">₹{{ item.get_total_price|floatformat:2 }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: grid; gap: 1rem;">
+                <a href="{% url 'orders:order_tracking' order.id %}" style="display: flex; align-items: center; justify-content: center; background: #2563eb; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s;">
+                    <i class="fas fa-tracking" style="margin-right: 0.5rem;"></i> Track Your Order
+                </a>
+                <a href="{% url 'core:home' %}" style="display: flex; align-items: center; justify-content: center; background: #fff; color: #2563eb; padding: 1rem; border: 2px solid #2563eb; border-radius: 8px; font-weight: 600; text-decoration: none;">
+                    Continue Shopping
+                </a>
+            </div>
+
+            <!-- Contact Info -->
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.9rem;">
+                <p style="margin: 0;">Need help? Contact us at <strong>support@certibuy.com</strong> or call <strong>+1 (800) 555-0199</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

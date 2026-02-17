@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Wishlist - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="cb-page">
+    <div class="cb-container">
+        <div class="cb-page-header">
+            <div>
+                <h1>Wishlist</h1>
+                <p>Products you have saved for later.</p>
+            </div>
+            <a href="{% url 'core:shop' %}" class="cb-btn cb-btn-primary">
+                <i class="fas fa-store"></i> Browse Products
+            </a>
+        </div>
+
+        <div class="cb-grid cb-grid-products">
+            {% for item in wishlist_items %}
+            <div class="cb-card cb-product-card">
+                {% with product=item.product %}
+                    {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="cb-product-image">
+                    {% endif %}
+                    <div class="cb-product-body">
+                        <h3>{{ product.name }}</h3>
+                        <p class="cb-muted">{{ product.category }}</p>
+                        <div class="cb-product-footer">
+                            <span class="cb-price">₹{{ product.price }}</span>
+                            <a href="{{ product.get_absolute_url }}" class="cb-btn cb-btn-outline">View</a>
+                        </div>
+                    </div>
+                {% endwith %}
+            </div>
+            {% empty %}
+            <div class="cb-empty">
+                <i class="fas fa-heart"></i>
+                <p>Your wishlist is empty.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

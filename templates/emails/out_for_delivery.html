@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Out for Delivery</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .alert-box {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        .alert-box strong {
+            color: #92400e;
+            font-size: 18px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Out for Delivery!</h1>
+        </div>
+        
+        <p>Hi <strong>{{ user.username }}</strong>,</p>
+        
+        <div class="alert-box">
+            <strong>Your order is out for delivery today!</strong>
+            <p style="margin: 10px 0 0 0;">Please ensure someone is available to receive the package.</p>
+        </div>
+        
+        <p>Order <strong>#{{ order.order_number }}</strong> is currently out for delivery and will arrive soon.</p>
+        
+        <p><strong>Delivery Details:</strong></p>
+        <ul>
+            <li>Order Number: {{ order.order_number }}</li>
+            <li>Expected Delivery: Today</li>
+            {% if order.tracking_id %}
+            <li>Tracking ID: {{ order.tracking_id }}</li>
+            {% endif %}
+        </ul>
+        
+        <p><strong>Delivery Address:</strong></p>
+        <p>
+            {{ order.address.full_name }}<br>
+            {{ order.address.address_line1 }}<br>
+            {% if order.address.address_line2 %}{{ order.address.address_line2 }}<br>{% endif %}
+            {{ order.address.city }}, {{ order.address.state }} - {{ order.address.pincode }}<br>
+            Phone: {{ order.address.phone }}
+        </p>
+        
+        <p><strong>Important Notes:</strong></p>
+        <ul>
+            <li>Please keep your phone accessible</li>
+            <li>Delivery partner may call you</li>
+            <li>Have your order number ready</li>
+        </ul>
+        
+        <div class="footer">
+            <p>Thank you for shopping with {{ site_name }}!</p>
+            <p>For assistance, contact us at <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+        </div>
+    </div>
+</body>
+</html>

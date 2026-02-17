@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_title }} - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="cb-page">
+    <div class="cb-container cb-form-container">
+        <div class="cb-card">
+            <h1>{{ form_title }}</h1>
+            <form method="post" class="cb-form">
+                {% csrf_token %}
+                <div class="cb-form-grid">
+                    <div class="cb-form-group">
+                        <label for="id_full_name">Full Name</label>
+                        {{ form.full_name }}
+                    </div>
+                    <div class="cb-form-group">
+                        <label for="id_phone">Phone</label>
+                        {{ form.phone }}
+                    </div>
+                    <div class="cb-form-group cb-form-span">
+                        <label for="id_address_line1">Address Line 1</label>
+                        {{ form.address_line1 }}
+                    </div>
+                    <div class="cb-form-group cb-form-span">
+                        <label for="id_address_line2">Address Line 2</label>
+                        {{ form.address_line2 }}
+                    </div>
+                    <div class="cb-form-group">
+                        <label for="id_city">City</label>
+                        {{ form.city }}
+                    </div>
+                    <div class="cb-form-group">
+                        <label for="id_state">State</label>
+                        {{ form.state }}
+                    </div>
+                    <div class="cb-form-group">
+                        <label for="id_pincode">Pincode</label>
+                        {{ form.pincode }}
+                    </div>
+                    <div class="cb-form-group">
+                        <label for="id_landmark">Landmark</label>
+                        {{ form.landmark }}
+                    </div>
+                    <div class="cb-form-group cb-form-checkbox">
+                        {{ form.is_default }}
+                        <label for="id_is_default">Set as default address</label>
+                    </div>
+                </div>
+                <div class="cb-card-actions">
+                    <a href="{% url 'accounts:addresses' %}" class="cb-btn cb-btn-ghost">Cancel</a>
+                    <button type="submit" class="cb-btn cb-btn-primary">Save Address</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

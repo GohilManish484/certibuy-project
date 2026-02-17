@@ -1,0 +1,798 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard - CertiBuy{% endblock %}
+
+{% block content %}
+<style>
+.premium-dashboard-container {
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    animation: fadeIn 0.6s ease;
+}
+
+.dashboard-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.dashboard-sidebar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 100px;
+    animation: slideInLeft 0.6s ease;
+}
+
+.sidebar-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dashboard-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dashboard-nav-link {
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    color: #475569 !important;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid transparent;
+}
+
+.dashboard-nav-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.dashboard-nav-link:hover {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(34, 197, 94, 0.1)) !important;
+    color: #16a34a !important;
+    transform: translateX(5px);
+    border-color: rgba(22, 163, 74, 0.3);
+}
+
+.dashboard-nav-link.active {
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    color: white !important;
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+}
+
+.dashboard-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: slideInRight 0.6s ease;
+}
+
+.dashboard-header {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.dashboard-welcome h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-welcome p {
+    color: #64748b !important;
+    font-size: 1rem;
+}
+
+.dashboard-header-btn {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    color: white !important;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
+}
+
+.dashboard-header-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(22, 163, 74, 0.4);
+    color: white !important;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 5px solid #16a34a;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(118, 75, 162, 0.1));
+    border-radius: 0 20px 0 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 70px rgba(22, 163, 74, 0.4);
+}
+
+.stat-card p {
+    color: #64748b !important;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+.dashboard-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.dashboard-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.card-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(22, 163, 74, 0.2);
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b !important;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-header h2 i {
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+.card-header p {
+    color: #64748b !important;
+    font-size: 0.95rem;
+}
+
+.order-item {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.05), rgba(118, 75, 162, 0.05)) !important;
+    border: 2px solid rgba(22, 163, 74, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.order-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.25);
+    border-color: #16a34a;
+}
+
+.order-header {
+    display: flex;
+    gap: 1.5rem;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.order-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.order-info {
+    flex: 1;
+}
+
+.order-info h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b !important;
+    margin-bottom: 0.5rem;
+}
+
+.order-info p {
+    color: #64748b !important;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.order-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.order-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-payment_successful,
+.status-confirmed,
+.status-packed {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important;
+    color: #0c63e4 !important;
+}
+
+.status-shipped,
+.status-out_for_delivery {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #d97706 !important;
+}
+
+.status-delivered {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
+    color: #059669 !important;
+}
+
+.status-cancelled {
+    background: linear-gradient(135deg, #fee2e2, #fecaca) !important;
+    color: #dc2626 !important;
+}
+
+.order-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+.order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(22, 163, 74, 0.15);
+}
+
+.order-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.order-btn-primary {
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    color: white !important;
+    border: none;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.order-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(22, 163, 74, 0.4);
+    color: white !important;
+}
+
+.order-btn-outline {
+    background: white !important;
+    color: #16a34a !important;
+    border: 2px solid #16a34a !important;
+}
+
+.order-btn-outline:hover {
+    background: #f0fdf4 !important;
+    transform: translateY(-2px);
+    color: #16a34a !important;
+}
+
+.order-btn-danger {
+    background: white !important;
+    color: #dc2626 !important;
+    border: 2px solid #dc2626 !important;
+}
+
+.order-btn-danger:hover {
+    background: #fee2e2 !important;
+    transform: translateY(-2px);
+    color: #dc2626 !important;
+}
+
+.order-timeline {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(22, 163, 74, 0.15);
+}
+
+.order-timeline summary {
+    color: #16a34a !important;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+
+.order-timeline ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+}
+
+.order-timeline li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: white !important;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    color: #64748b !important;
+    font-size: 1.1rem;
+}
+
+.profile-widget {
+    display: flex;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.05), rgba(118, 75, 162, 0.05)) !important;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+}
+
+.profile-avatar-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #16a34a;
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    flex-shrink: 0;
+}
+
+.profile-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar-large i {
+    font-size: 2.5rem;
+    color: white !important;
+}
+
+.profile-info h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e293b !important;
+    margin-bottom: 0.5rem;
+}
+
+.profile-info p {
+    color: #64748b !important;
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+}
+
+.status-verified {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0) !important;
+    color: #059669 !important;
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #d97706 !important;
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+.card-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.card-btn {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.card-btn-primary {
+    background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.card-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+    color: white !important;
+}
+
+.card-btn-outline {
+    background: white !important;
+    color: #16a34a !important;
+    border: 2px solid #16a34a !important;
+}
+
+.card-btn-outline:hover {
+    background: #f0fdf4 !important;
+    transform: translateY(-3px);
+    color: #16a34a !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-sidebar {
+        position: static;
+    }
+    
+    .dashboard-content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .order-header {
+        flex-direction: column;
+    }
+    
+    .order-actions {
+        flex-direction: column;
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<section class="premium-dashboard-container">
+    <div class="dashboard-wrapper">
+        <div class="dashboard-grid">
+            <aside class="dashboard-sidebar">
+                <h2 class="sidebar-title">
+                    <i class="fas fa-user-circle"></i> Account
+                </h2>
+                <nav class="dashboard-nav">
+                    <a href="{% url 'core:customer-dashboard' %}" class="dashboard-nav-link active">
+                        <i class="fas fa-th-large"></i> Dashboard Overview
+                    </a>
+                    <a href="{% url 'core:customer-dashboard' %}#orders" class="dashboard-nav-link">
+                        <i class="fas fa-shopping-cart"></i> Orders
+                    </a>
+                    <a href="{% url 'core:customer-dashboard' %}#orders" class="dashboard-nav-link">
+                        <i class="fas fa-truck"></i> Track Orders
+                    </a>
+                    <a href="{% url 'accounts:wishlist' %}" class="dashboard-nav-link">
+                        <i class="fas fa-heart"></i> Wishlist
+                    </a>
+                    <a href="{% url 'accounts:addresses' %}" class="dashboard-nav-link">
+                        <i class="fas fa-map-marker-alt"></i> Addresses
+                    </a>
+                    <a href="{% url 'accounts:password_change' %}" class="dashboard-nav-link">
+                        <i class="fas fa-cog"></i> Account Settings
+                    </a>
+                    <a href="{% url 'core:contact' %}" class="dashboard-nav-link">
+                        <i class="fas fa-headset"></i> Support
+                    </a>
+                </nav>
+            </aside>
+
+            <div class="dashboard-main">
+            <div class="dashboard-main">
+                <div class="dashboard-header">
+                    <div class="dashboard-welcome">
+                        <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
+                        <p>Manage your orders, payments, and account details.</p>
+                    </div>
+                    <a href="{% url 'core:shop' %}" class="dashboard-header-btn">
+                        <i class="fas fa-store"></i> Continue Shopping
+                    </a>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <p>Total Orders</p>
+                        <h3>{{ total_orders }}</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p>Active Orders</p>
+                        <h3>{{ active_orders }}</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p>Cancelled Orders</p>
+                        <h3>{{ cancelled_orders }}</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p>Total Spent</p>
+                        <h3>₹{{ total_spent }}</h3>
+                    </div>
+                </div>
+
+                <div class="dashboard-content-grid">
+                <div class="dashboard-content-grid">
+                    <div class="dashboard-card" id="orders">
+                        <div class="card-header">
+                            <h2>
+                                <i class="fas fa-shopping-bag"></i> Recent Orders
+                            </h2>
+                            <p>Track your latest purchases and statuses.</p>
+                        </div>
+
+                        {% if recent_orders %}
+                            {% for order in recent_orders %}
+                            <div class="order-item">
+                                <div class="order-header">
+                                    {% if order.primary_item and order.primary_item.product.images.first %}
+                                    <img src="{{ order.primary_item.product.images.first.image.url }}" alt="{{ order.primary_item.product.name }}" class="order-image">
+                                    {% endif %}
+                                    <div class="order-info">
+                                        <h3>Order {{ order.order_number|default:order.id }}</h3>
+                                        <p><i class="fas fa-calendar"></i> {{ order.created_at|date:"M d, Y" }} • {{ order.get_payment_method_display }}</p>
+                                        {% if order.refund_status %}
+                                        <p><i class="fas fa-undo"></i> Refund: {{ order.refund_status }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="order-meta">
+                                        <span class="order-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                                        <div class="order-amount">₹{{ order.total_amount }}</div>
+                                    </div>
+                                </div>
+                                <div class="order-actions">
+                                    <a href="{% url 'orders:order_confirmation' order.id %}" class="order-btn order-btn-primary">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </a>
+                                    <a href="{% url 'orders:order_tracking' order.id %}" class="order-btn order-btn-outline">
+                                        <i class="fas fa-truck"></i> Track
+                                    </a>
+                                    <a href="{% url 'orders:order_invoice' order.id %}?download=1" class="order-btn order-btn-outline">
+                                        <i class="fas fa-download"></i> Invoice
+                                    </a>
+                                    {% if order.can_cancel %}
+                                    <form method="post" action="{% url 'orders:cancel_order' order.id %}" onsubmit="return confirm('Cancel this order?');" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="order-btn order-btn-danger">
+                                            <i class="fas fa-times"></i> Cancel Order
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    {% if order.can_request_refund %}
+                                    <a href="{% url 'core:contact' %}" class="order-btn order-btn-outline">
+                                        <i class="fas fa-undo"></i> Request Return
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <details class="order-timeline">
+                                    <summary><i class="fas fa-history"></i> Tracking timeline</summary>
+                                    <ul>
+                                        {% for history in order.status_history.all|slice:":5" %}
+                                        <li>
+                                            <span class="order-badge status-{{ history.status }}">{{ history.get_status_display }}</span>
+                                            <span>{{ history.timestamp|date:"M d, Y H:i" }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </details>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-bag"></i>
+                                <p>No orders yet. Start shopping to see your orders here.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h2>
+                                <i class="fas fa-user"></i> Profile Summary
+                            </h2>
+                            <p>Keep your profile up to date.</p>
+                        </div>
+                        <div class="profile-widget">
+                            <div class="profile-avatar-large">
+                                {% if user.profile_photo %}
+                                <img src="{{ user.profile_photo.url }}" alt="{{ user.username }}">
+                                {% else %}
+                                <i class="fas fa-user"></i>
+                                {% endif %}
+                            </div>
+                            <div class="profile-info">
+                                <h3>{{ user.get_full_name|default:user.username }}</h3>
+                                <p><i class="fas fa-envelope"></i> {{ user.email }}</p>
+                                {% if profile and profile.phone %}
+                                <p><i class="fas fa-phone"></i> {{ profile.phone }}</p>
+                                {% endif %}
+                                {% if profile and profile.is_verified %}
+                                <span class="status-badge status-verified"><i class="fas fa-check-circle"></i> Email Verified</span>
+                                {% else %}
+                                <span class="status-badge status-pending"><i class="fas fa-exclamation-circle"></i> Email Unverified</span>
+                                {% endif %}
+                                {% if default_address %}
+                                <p style="margin-top: 0.5rem;"><i class="fas fa-map-marker-alt"></i> {{ default_address.city }}, {{ default_address.state }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <a href="{% url 'accounts:profile' %}" class="card-btn card-btn-primary">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </a>
+                            <a href="{% url 'accounts:addresses' %}" class="card-btn card-btn-outline">
+                                <i class="fas fa-map-marker-alt"></i> Manage Addresses
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,870 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="refurbished-detail" style="padding-top: 5rem; padding-bottom: 3rem; background: #f8f9fa;">
+    <div class="container" style="max-width: 1320px;">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="image-gallery-section">
+                    {% if product.images.exists %}
+                        <div class="thumbnail-vertical">
+                            {% for image in product.images.all %}
+                                <button type="button" class="thumb-item" data-image="{{ image.image.url }}">
+                                    <img src="{{ image.image.url }}" alt="{{ product.name }}">
+                                </button>
+                            {% endfor %}
+                        </div>
+                        <div class="main-image-wrapper">
+                            <span class="badge certified-badge"><i class="fas fa-certificate"></i> Certified Quality</span>
+                            <div class="main-image-container">
+                                <img id="mainImage" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="main-image-wrapper">
+                            <div class="main-image-container" style="background: #e9ecef; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-box" style="font-size: 5rem; color: #adb5bd;"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="product-summary">
+                <div class="certification-badge" style="margin-bottom: 1rem;">
+                    <i class="fas fa-shield-check"></i>
+                    <span>Physically Inspected by CERTIBUY</span>
+                </div>
+
+                <h1 class="product-title">{{ product.name }}</h1>
+
+                <div class="price-row">
+                    <div class="price-block">
+                        <span class="price">${{ product.price|floatformat:2 }}</span>
+                        {% if product.discount_price %}
+                            <span class="discount">Save {{ product.discount_price }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="availability">
+                        {% if product.certification_status == 'certified' %}
+                            <span class="in-stock"><i class="fas fa-check-circle"></i> In Stock</span>
+                        {% else %}
+                            <span class="out-stock"><i class="fas fa-times-circle"></i> Unavailable</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="badge-row">
+                    <span class="badge-certified"><i class="fas fa-check-circle"></i> Certified</span>
+                    {% if product.condition_grade == 'new' %}
+                        <span class="badge-condition-new">Like New</span>
+                    {% elif product.condition_grade == 'excellent' %}
+                        <span class="badge-condition-excellent">Excellent</span>
+                    {% else %}
+                        <span class="badge-condition-good">Good</span>
+                    {% endif %}
+                    <span class="badge-meta"><i class="fas fa-calendar"></i> Inspected {{ product.created_at|date:"M d, Y" }}</span>
+                </div>
+
+                <ul class="highlight-points">
+                    <li><i class="fas fa-certificate"></i> Certified Quality Guarantee</li>
+                    <li><i class="fas fa-shield-alt"></i> 7-Day Testing Warranty</li>
+                    <li><i class="fas fa-clipboard-check"></i> Multi-point inspection completed</li>
+                    <li><i class="fas fa-box-open"></i> Category: {{ product.category|title }}</li>
+                </ul>
+
+                <div class="buy-box">
+                    <div class="buy-box-header">
+                        <span>Premium Checkout</span>
+                        <span class="delivery">Delivery by {% now "M d" %}</span>
+                    </div>
+                    <div class="buy-box-body">
+                        <form method="post" action="{% url 'core:add_to_cart' %}" class="js-add-to-cart">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn-primary-custom">Add to Cart</button>
+                        </form>
+                        <form method="post" action="{% url 'orders:buy_now' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <button type="submit" class="btn-secondary-custom">Buy Now</button>
+                        </form>
+                    </div>
+                    <div class="buy-box-footer">
+                        <span><i class="fas fa-undo"></i> Easy return request process</span>
+                        <span><i class="fas fa-headset"></i> Dedicated inspection helpline</span>
+                    </div>
+                </div>
+
+                <div class="trust-strip">
+                    <div><i class="fas fa-lock"></i> Secure checkout</div>
+                    <div><i class="fas fa-user-check"></i> Certified inspection</div>
+                    <div><i class="fas fa-hand-holding-usd"></i> Money-back guarantee</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="content-grid">
+            <div class="glass detail-card">
+                <h3>Description</h3>
+                <p>{{ product.description }}</p>
+            </div>
+            <div class="glass detail-card">
+                <h3>Condition & Transparency</h3>
+                <div class="condition-guide">
+                    <div><strong>Like New</strong><span>No scratches, 100% functional</span></div>
+                    <div><strong>Excellent</strong><span>Minor cosmetic marks</span></div>
+                    <div><strong>Good</strong><span>Visible signs of use</span></div>
+                </div>
+                <div class="inspection-summary">
+                    <p>Inspection summary: Certified inspectors verified core functions and cosmetic grade.</p>
+                    <div class="tested-points">
+                        <span>Battery</span>
+                        <span>Screen</span>
+                        <span>Camera</span>
+                        <span>Ports</span>
+                        <span>Speakers</span>
+                        <span>Connectivity</span>
+                    </div>
+                </div>
+                <p class="real-photo-note"><i class="fas fa-camera"></i> Real photos, no stock imagery.</p>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="glass detail-card">
+                <h3>Detailed Technical Specifications</h3>
+                <div class="spec-grid">
+                    <div><span>Category</span><strong>{{ product.category|title }}</strong></div>
+                    <div><span>Condition Grade</span><strong>
+                        {% if product.condition_grade == 'new' %}
+                            Like New
+                        {% elif product.condition_grade == 'excellent' %}
+                            Excellent
+                        {% else %}
+                            Good
+                        {% endif %}
+                    </strong></div>
+                    <div><span>Certification</span><strong>{{ product.get_certification_status_display }}</strong></div>
+                    <div><span>Inspection Date</span><strong>{{ product.created_at|date:"M d, Y" }}</strong></div>
+                    <div><span>Warranty</span><strong>7-Day Testing Warranty</strong></div>
+                    <div><span>Photos</span><strong>Real item photos</strong></div>
+                </div>
+            </div>
+            <div class="glass detail-card">
+                <h3>Full Inspection Report</h3>
+                <div class="accordion">
+                    <details open>
+                        <summary>Inspection Summary</summary>
+                        <p>Certified inspectors completed a full functional, cosmetic, and safety review for this listing.</p>
+                    </details>
+                    <details>
+                        <summary>What Was Tested</summary>
+                        <ul class="info-list">
+                            <li><i class="fas fa-battery-full"></i> Battery health and charge cycles</li>
+                            <li><i class="fas fa-tv"></i> Screen quality and dead pixel check</li>
+                            <li><i class="fas fa-camera"></i> Camera and sensor calibration</li>
+                            <li><i class="fas fa-plug"></i> Ports, buttons, and connectivity</li>
+                            <li><i class="fas fa-volume-up"></i> Speakers and microphone</li>
+                            <li><i class="fas fa-wifi"></i> Wi-Fi, Bluetooth, and network integrity</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary>Cosmetic Grade Details</summary>
+                        <p>Graded by inspection team against CERTIBUY cosmetic standards with real photos attached.</p>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="glass detail-card">
+                <h3>Customer FAQ About This Product</h3>
+                <div class="accordion">
+                    <details>
+                        <summary>Is this product fully functional?</summary>
+                        <p>Yes. It passes the CERTIBUY functional inspection and quality verification.</p>
+                    </details>
+                    <details>
+                        <summary>What condition should I expect?</summary>
+                        <p>Condition matches the grade shown above. Real photos show the exact item.</p>
+                    </details>
+                    <details>
+                        <summary>What if there is an issue after delivery?</summary>
+                        <p>Covered by the 7-Day Testing Warranty with replacement assistance.</p>
+                    </details>
+                    <details>
+                        <summary>How do returns work?</summary>
+                        <p>Submit a return request within the policy window. Our support team will assist.</p>
+                    </details>
+                </div>
+            </div>
+            <div class="glass detail-card">
+                <h3>Secure Checkout</h3>
+                <div class="secure-checkout">
+                    <div class="secure-icon"><i class="fas fa-lock"></i></div>
+                    <div>
+                        <strong>End-to-end encryption</strong>
+                        <p>Secure checkout with certified inspection and buyer protection.</p>
+                    </div>
+                </div>
+                <div class="trust-strip animated">
+                    <div><i class="fas fa-user-check"></i> Certified inspection</div>
+                    <div><i class="fas fa-shield-alt"></i> Warranty protection</div>
+                    <div><i class="fas fa-hand-holding-usd"></i> Money-back guarantee</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="glass detail-card">
+                <h3>Warranty & Guarantee</h3>
+                <ul class="info-list">
+                    <li><i class="fas fa-shield-alt"></i> 7-Day Testing Warranty</li>
+                    <li><i class="fas fa-undo"></i> Return policy summary available at checkout</li>
+                    <li><i class="fas fa-sync"></i> Replacement assistance for verified issues</li>
+                    <li><i class="fas fa-certificate"></i> Certified Quality Guarantee badge</li>
+                    <li><i class="fas fa-headset"></i> After-sales support included</li>
+                </ul>
+                <div class="guarantee-badge">
+                    <i class="fas fa-certificate"></i>
+                    <span>Certified Quality Guaranteed</span>
+                </div>
+            </div>
+            <div class="glass detail-card">
+                <h3>After Sales Services</h3>
+                <ul class="info-list">
+                    <li><i class="fas fa-headset"></i> Free customer support</li>
+                    <li><i class="fas fa-phone"></i> Dedicated inspection helpline</li>
+                    <li><i class="fas fa-undo"></i> Easy return request process</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Order tracking system</li>
+                    <li><i class="fas fa-sync"></i> Replacement assistance</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="glass trust-banner">
+            <div class="trust-message">
+                <h3>We Don’t Sell Products. We Sell Trust.</h3>
+                <p>Every product is physically inspected, certified, and backed by a warranty you can rely on.</p>
+            </div>
+            <div class="trust-icons">
+                <div><i class="fas fa-lock"></i> Secure checkout</div>
+                <div><i class="fas fa-user-check"></i> Certified inspection</div>
+                <div><i class="fas fa-hand-holding-usd"></i> Money-back guarantee</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <a href="{% url 'products:list' %}" class="btn-secondary-custom"><i class="fas fa-arrow-left"></i> Back to Products</a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .premium-detail {
+        background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 55%),
+            radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.25), transparent 45%);
+    }
+
+    .product-hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: 3rem;
+        margin-bottom: 3rem;
+    }
+
+    .media-shell {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 1.8rem;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.15);
+    }
+
+    .product-main-image {
+        position: relative;
+        overflow: hidden;
+        border-radius: 14px;
+        height: 440px;
+        background: rgba(15, 23, 42, 0.6);
+    }
+
+    .product-main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.45s ease;
+    }
+
+    .product-main-image:hover img {
+        transform: scale(1.08);
+    }
+
+    .product-thumbnails {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0.6rem;
+        margin-top: 1rem;
+    }
+
+    .thumbnail-btn {
+        border: 2px solid transparent;
+        border-radius: 10px;
+        padding: 0;
+        background: transparent;
+        overflow: hidden;
+        cursor: pointer;
+        transition: border 0.2s ease, transform 0.2s ease;
+    }
+
+    .thumbnail-btn img {
+        width: 100%;
+        height: 88px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .thumbnail-btn.active {
+        border-color: var(--accent-blue);
+        transform: translateY(-2px);
+    }
+
+    .real-photo-note {
+        margin-top: 0.75rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .product-title {
+        font-size: 2.6rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .price {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: var(--light-blue);
+    }
+
+    .discount {
+        font-size: 0.95rem;
+        color: #f59e0b;
+        font-weight: 600;
+    }
+
+    .availability {
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .in-stock {
+        color: #22c55e;
+    }
+
+    .out-stock {
+        color: #ef4444;
+    }
+
+    .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .badge-certified,
+    .badge-condition-new,
+    .badge-condition-excellent,
+    .badge-condition-good,
+    .badge-meta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-certified {
+        background: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+    }
+
+    .badge-condition-new {
+        background: rgba(37, 99, 235, 0.15);
+        color: #60a5fa;
+    }
+
+    .badge-condition-excellent {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+    }
+
+    .badge-condition-good {
+        background: rgba(245, 158, 11, 0.15);
+        color: #f59e0b;
+    }
+
+    .badge-meta {
+        background: rgba(15, 23, 42, 0.1);
+        color: var(--text-secondary);
+    }
+
+    .highlight-points {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem;
+        display: grid;
+        gap: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+    .highlight-points i {
+        color: var(--accent-blue);
+        margin-right: 0.5rem;
+    }
+
+    .buy-box {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 18px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: sticky;
+        top: 110px;
+    }
+
+    .buy-box-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .buy-box-body {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .buy-box-body button {
+        width: 100%;
+    }
+
+    .buy-box-footer {
+        display: grid;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 1rem;
+    }
+
+    .trust-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+    .trust-strip div {
+        background: rgba(37, 99, 235, 0.08);
+        padding: 0.65rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .trust-strip.animated div::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+        transform: translateX(-120%);
+        animation: trustShimmer 3.8s ease-in-out infinite;
+    }
+
+    .trust-strip.animated div:nth-child(2)::after {
+        animation-delay: 0.6s;
+    }
+
+    .trust-strip.animated div:nth-child(3)::after {
+        animation-delay: 1.2s;
+    }
+
+    .section-divider {
+        height: 1px;
+        background: rgba(148, 163, 184, 0.2);
+        margin: 2.5rem 0;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .detail-card {
+        padding: 2rem;
+    }
+
+    .detail-card h3 {
+        color: var(--text-primary);
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .detail-card p {
+        color: var(--text-secondary);
+        line-height: 1.8;
+    }
+
+    .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .spec-grid div {
+        background: rgba(15, 23, 42, 0.25);
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+    }
+
+    .spec-grid span {
+        display: block;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .spec-grid strong {
+        color: var(--text-primary);
+    }
+
+    .accordion {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .accordion details {
+        background: rgba(37, 99, 235, 0.08);
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+    }
+
+    .accordion summary {
+        cursor: pointer;
+        color: var(--text-primary);
+        font-weight: 600;
+        list-style: none;
+    }
+
+    .accordion summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .accordion summary::after {
+        content: "+";
+        float: right;
+        color: var(--accent-blue);
+    }
+
+    .accordion details[open] summary::after {
+        content: "-";
+    }
+
+    .accordion p,
+    .accordion ul {
+        color: var(--text-secondary);
+        margin-top: 0.6rem;
+    }
+
+    .secure-checkout {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 14px;
+        background: rgba(15, 23, 42, 0.35);
+        margin-bottom: 1.2rem;
+    }
+
+    .secure-icon {
+        width: 46px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+        font-size: 1.2rem;
+        animation: securePulse 2.6s ease-in-out infinite;
+    }
+
+    @keyframes trustShimmer {
+        0% {
+            transform: translateX(-120%);
+        }
+        60% {
+            transform: translateX(120%);
+        }
+        100% {
+            transform: translateX(120%);
+        }
+    }
+
+    @keyframes securePulse {
+        0%, 100% {
+            box-shadow: 0 0 0 rgba(34, 197, 94, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 18px rgba(34, 197, 94, 0.45);
+        }
+    }
+
+    .condition-guide {
+        display: grid;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .condition-guide div {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        background: rgba(37, 99, 235, 0.08);
+        border-radius: 12px;
+    }
+
+    .inspection-summary {
+        margin-top: 1rem;
+    }
+
+    .tested-points {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 0.75rem;
+    }
+
+    .tested-points span {
+        background: rgba(15, 23, 42, 0.2);
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+    .info-list i {
+        color: var(--accent-blue);
+        margin-right: 0.45rem;
+    }
+
+    .guarantee-badge {
+        margin-top: 1.5rem;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        background: rgba(34, 197, 94, 0.12);
+        color: #22c55e;
+        font-weight: 600;
+        display: inline-flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .trust-banner {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        gap: 2rem;
+        padding: 2rem;
+        margin-top: 2rem;
+        align-items: center;
+    }
+
+    .trust-banner h3 {
+        color: var(--text-primary);
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .trust-banner p {
+        color: var(--text-secondary);
+    }
+
+    .trust-icons {
+        display: grid;
+        gap: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+    .trust-icons div {
+        padding: 0.7rem 0.9rem;
+        background: rgba(37, 99, 235, 0.08);
+        border-radius: 10px;
+        font-size: 0.9rem;
+    }
+
+    .media-fallback {
+        height: 440px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        font-size: 5rem;
+    }
+
+    @media (max-width: 1024px) {
+        .product-hero-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .buy-box {
+            position: static;
+        }
+
+        .trust-banner {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .product-title {
+            font-size: 2rem;
+        }
+
+        .product-main-image {
+            height: 320px;
+        }
+
+        .media-fallback {
+            height: 320px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateCartBadge(count) {
+        const badge = document.getElementById('cartCountBadge');
+        if (!badge) {
+            return;
+        }
+        const safeCount = Number.isFinite(count) ? count : 0;
+        badge.textContent = safeCount;
+        badge.style.display = safeCount > 0 ? 'inline-block' : 'none';
+    }
+
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '24px';
+        toast.style.right = '24px';
+        toast.style.padding = '12px 16px';
+        toast.style.borderRadius = '10px';
+        toast.style.zIndex = '9999';
+        toast.style.fontWeight = '600';
+        toast.style.color = '#0f172a';
+        toast.style.background = type === 'error' ? '#fecaca' : '#bbf7d0';
+        toast.style.boxShadow = '0 12px 30px rgba(15, 23, 42, 0.2)';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2500);
+    }
+
+    const mainImage = document.getElementById('mainProductImage');
+    const thumbnailButtons = document.querySelectorAll('.thumbnail-btn');
+    if (mainImage && thumbnailButtons.length) {
+        thumbnailButtons.forEach((button, index) => {
+            if (index === 0) {
+                button.classList.add('active');
+            }
+            button.addEventListener('click', () => {
+                const nextImage = button.getAttribute('data-image');
+                if (nextImage) {
+                    mainImage.src = nextImage;
+                }
+                thumbnailButtons.forEach((btn) => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+    }
+
+    document.querySelectorAll('.js-add-to-cart').forEach((form) => {
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: new FormData(form),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Request failed');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    updateCartBadge(parseInt(data.cart_count, 10));
+                    showToast('Product added to cart.', 'success');
+                } else {
+                    showToast('Unable to add to cart.', 'error');
+                }
+            } catch (error) {
+                showToast('Unable to add to cart.', 'error');
+            }
+        });
+    });
+</script>
+{% endblock %}

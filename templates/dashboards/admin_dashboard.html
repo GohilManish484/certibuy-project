@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - CertiBuy{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 5rem; padding-bottom: 3rem;">
+    <div class="container-premium" style="max-width: 1400px;">
+        
+        <!-- Header -->
+        <div style="margin-bottom: 3rem;">
+            <h1 style="color: var(--text-primary); margin-bottom: 0.5rem;">
+                <i class="fas fa-chart-line"></i> Admin Dashboard
+            </h1>
+            <p style="color: var(--text-secondary); margin: 0;">System overview and management</p>
+        </div>
+        
+        <!-- System Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            
+            <!-- Total Users -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--accent-blue); margin-bottom: 0.5rem;">
+                    {{ total_users }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-users"></i> Total Users
+                </p>
+            </div>
+            
+            <!-- Customers -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--light-blue); margin-bottom: 0.5rem;">
+                    {{ customers }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-shopping-cart"></i> Customers
+                </p>
+            </div>
+            
+            <!-- Sellers -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #10b981; margin-bottom: 0.5rem;">
+                    {{ sellers }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-store"></i> Sellers
+                </p>
+            </div>
+            
+            <!-- Inspectors -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #f59e0b; margin-bottom: 0.5rem;">
+                    {{ inspectors }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-clipboard-check"></i> Inspectors
+                </p>
+            </div>
+        </div>
+        
+        <!-- Product Stats -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            
+            <!-- Total Products -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--accent-blue); margin-bottom: 0.5rem;">
+                    {{ total_products }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-cube"></i> Total Products
+                </p>
+            </div>
+            
+            <!-- Certified Products -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #10b981; margin-bottom: 0.5rem;">
+                    {{ certified_products }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-check-circle"></i> Certified
+                </p>
+            </div>
+            
+            <!-- Total Orders -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--accent-blue); margin-bottom: 0.5rem;">
+                    {{ total_orders }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-shopping-bag"></i> Total Orders
+                </p>
+            </div>
+            
+            <!-- Total Revenue -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #10b981; margin-bottom: 0.5rem;">
+                    ${{ total_revenue|floatformat:2 }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-dollar-sign"></i> Revenue
+                </p>
+            </div>
+        </div>
+        
+        <!-- Submission & Inspection Stats -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            
+            <!-- Total Submissions -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--light-blue); margin-bottom: 0.5rem;">
+                    {{ total_submissions }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-tasks"></i> Submissions
+                </p>
+            </div>
+            
+            <!-- Pending Submissions -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: #f59e0b; margin-bottom: 0.5rem;">
+                    {{ pending_submissions }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-hourglass-start"></i> Pending
+                </p>
+            </div>
+            
+            <!-- Total Inspections -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--accent-blue); margin-bottom: 0.5rem;">
+                    {{ total_inspections }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-clipboard-check"></i> Inspections
+                </p>
+            </div>
+            
+            <!-- Pending Inspections -->
+            <div class="auth-card" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--danger); margin-bottom: 0.5rem;">
+                    {{ pending_inspections }}
+                </div>
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    <i class="fas fa-exclamation-circle"></i> Pending
+                </p>
+            </div>
+        </div>
+        
+        <!-- Admin Actions -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            
+            <!-- Manage Users -->
+            <div class="auth-card">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    <i class="fas fa-users-cog"></i> Manage Users
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Manage all users and roles
+                </p>
+                <a href="/admin/accounts/user/" class="btn-primary-custom" style="display: block; text-align: center; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-right"></i> Go to Admin
+                </a>
+            </div>
+            
+            <!-- Manage Products -->
+            <div class="auth-card">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    <i class="fas fa-cube"></i> Manage Products
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Manage all products and inventory
+                </p>
+                <a href="/admin/products/product/" class="btn-primary-custom" style="display: block; text-align: center; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-right"></i> Go to Admin
+                </a>
+            </div>
+            
+            <!-- Manage Inspections -->
+            <div class="auth-card">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    <i class="fas fa-clipboard-check"></i> Manage Inspections
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Review and manage inspections
+                </p>
+                <a href="/admin/inspections/inspection/" class="btn-primary-custom" style="display: block; text-align: center; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-right"></i> Go to Admin
+                </a>
+            </div>
+
+            <!-- Notifications Dashboard -->
+            <div class="auth-card">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    <i class="fas fa-bell"></i> Notifications
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Monitor system and operational alerts
+                </p>
+                <a href="{% url 'core:admin-notification-dashboard' %}" class="btn-primary-custom" style="display: block; text-align: center; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-right"></i> View Alerts
+                </a>
+            </div>
+            
+            <!-- Django Admin -->
+            <div class="auth-card">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    <i class="fas fa-sliders-h"></i> Full Admin Panel
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Access complete Django admin
+                </p>
+                <a href="/admin/" class="btn-secondary-custom" style="display: block; text-align: center; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-arrow-right"></i> Django Admin
+                </a>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            
+            <!-- Recent Submissions -->
+            {% if recent_submissions %}
+            <div class="auth-card">
+                <h2 style="color: var(--text-primary); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+                    Recent Submissions
+                </h2>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    {% for submission in recent_submissions %}
+                    <div style="padding: 1rem 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <p style="color: var(--text-primary); margin: 0; font-weight: 600;">{{ submission.name }}</p>
+                            <p style="color: var(--text-secondary); margin: 0.3rem 0 0 0; font-size: 0.8rem;">By: {{ submission.seller.username }}</p>
+                        </div>
+                        {% if submission.status == 'approved' %}
+                        <span style="display: inline-block; padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; background: rgba(16, 185, 129, 0.2); color: #10b981;">
+                            {{ submission.get_status_display }}
+                        </span>
+                        {% elif submission.status == 'rejected' %}
+                        <span style="display: inline-block; padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; background: rgba(239, 68, 68, 0.2); color: var(--danger);">
+                            {{ submission.get_status_display }}
+                        </span>
+                        {% else %}
+                        <span style="display: inline-block; padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; background: rgba(100, 200, 255, 0.2); color: var(--light-blue);">
+                            {{ submission.get_status_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Recent Inspections -->
+            {% if recent_inspections %}
+            <div class="auth-card">
+                <h2 style="color: var(--text-primary); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+                    Recent Inspections
+                </h2>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    {% for inspection in recent_inspections %}
+                    <div style="padding: 1rem 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <p style="color: var(--text-primary); margin: 0; font-weight: 600;">
+                                {% if inspection.submission.product %}
+                                    {{ inspection.submission.product.name }}
+                                {% else %}
+                                    {{ inspection.submission.name }}
+                                {% endif %}
+                            </p>
+                            <p style="color: var(--text-secondary); margin: 0.3rem 0 0 0; font-size: 0.8rem;">Inspector: {{ inspection.inspector.username }}</p>
+                        </div>
+                        {% if inspection.status == 'completed' %}
+                        <span style="display: inline-block; padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; background: rgba(16, 185, 129, 0.2); color: #10b981;">
+                            {{ inspection.get_status_display }}
+                        </span>
+                        {% elif inspection.status == 'pending' %}
+                        <span style="display: inline-block; padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; background: rgba(100, 200, 255, 0.2); color: var(--light-blue);">
+                            {{ inspection.get_status_display }}
+                        </span>
+                        {% else %}
+                        <span style="display: inline-block; padding: 0.3rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; background: rgba(239, 68, 68, 0.2); color: var(--danger);">
+                            {{ inspection.get_status_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

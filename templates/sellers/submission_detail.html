@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ submission.product_name }} - Submission Detail{% endblock %}
+
+{% block content %}
+<section class="section-premium" style="padding-top: 2rem;">
+    <div class="container-premium">
+        <div style="margin-bottom: 2rem;">
+            <a href="{% url 'sellers:my_submissions' %}" class="btn-secondary-custom" style="font-size: 0.9rem; padding: 0.5rem 1.5rem;"><i class="fas fa-arrow-left"></i> Back to My Submissions</a>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+            <!-- Images Section -->
+            <div>
+                <div class="glass" style="padding: 2rem;">
+                    {% if submission.images.exists %}
+                        <img src="{{ submission.images.first.image.url }}" alt="{{ submission.product_name }}" style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+                        
+                        {% if submission.images.count > 1 %}
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem;">
+                            {% for image in submission.images.all %}
+                                <img src="{{ image.image.url }}" alt="{{ submission.product_name }}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid var(--border-color);">
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                            <i class="fas fa-box" style="font-size: 6rem; color: var(--text-secondary);"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Details Section -->
+            <div>
+                <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem;">{{ submission.product_name }}</h1>
+                
+                <div style="margin-bottom: 2rem;">
+                    {% if submission.status == 'pending' %}
+                        <span style="padding: 0.6rem 1.2rem; background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); border-radius: 8px; font-weight: 600; font-size: 1rem; display: inline-block;">
+                            <i class="fas fa-clock"></i> Pending Review
+                        </span>
+                    {% elif submission.status == 'inspection_scheduled' %}
+                        <span style="padding: 0.6rem 1.2rem; background: rgba(59, 130, 246, 0.2); color: var(--light-blue); border: 1px solid var(--light-blue); border-radius: 8px; font-weight: 600; font-size: 1rem; display: inline-block;">
+                            <i class="fas fa-calendar-check"></i> Inspection Scheduled
+                        </span>
+                    {% elif submission.status == 'approved' %}
+                        <span style="padding: 0.6rem 1.2rem; background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); border-radius: 8px; font-weight: 600; font-size: 1rem; display: inline-block;">
+                            <i class="fas fa-check-circle"></i> Approved
+                        </span>
+                    {% elif submission.status == 'rejected' %}
+                        <span style="padding: 0.6rem 1.2rem; background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); border-radius: 8px; font-weight: 600; font-size: 1rem; display: inline-block;">
+                            <i class="fas fa-times-circle"></i> Rejected
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <div class="glass" style="padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Submission Details</h3>
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+                            <span style="color: var(--text-secondary);">Category:</span>
+                            <span style="color: var(--text-primary); font-weight: 600;">{{ submission.category }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+                            <span style="color: var(--text-secondary);">Condition:</span>
+                            <span style="color: var(--text-primary); font-weight: 600;">{{ submission.condition }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+                            <span style="color: var(--text-secondary);">Expected Price:</span>
+                            <span style="color: var(--light-blue); font-weight: 700; font-size: 1.2rem;">${{ submission.expected_price }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span style="color: var(--text-secondary);">Submitted:</span>
+                            <span style="color: var(--text-primary); font-weight: 600;">{{ submission.created_at|date:"M d, Y h:i A" }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass" style="padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem;">Description</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.8;">{{ submission.description }}</p>
+                </div>
+                
+                {% if submission.status == 'rejected' and submission.rejection_reason %}
+                <div class="glass" style="padding: 2rem; border: 2px solid var(--danger);">
+                    <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--danger); margin-bottom: 1rem;"><i class="fas fa-exclamation-triangle"></i> Rejection Reason</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.8;">{{ submission.rejection_reason }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@media (max-width: 768px) {
+    section > div > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+{% endblock %}

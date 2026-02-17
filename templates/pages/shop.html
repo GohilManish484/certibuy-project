@@ -1,0 +1,829 @@
+{% extends "base.html" %}
+
+{% block title %}Shop - CertiBuy{% endblock %}
+
+{% block content %}
+<!-- Filter Bar -->
+<div class="shop-filter-section">
+    <div class="container" style="max-width: 1400px;">
+        <form method="get" id="filterForm" class="shop-filter-form">
+            <div class="filter-row-primary">
+                <!-- Category -->
+                <div class="filter-group">
+                    <label class="filter-label">Category</label>
+                    <select name="category" class="filter-select">
+                        <option value="">All Categories</option>
+                        {% for cat in all_categories %}
+                            <option value="{{ cat }}" {% if cat == category_filter %}selected{% endif %}>
+                                {{ cat|title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Condition -->
+                <div class="filter-group">
+                    <label class="filter-label">Condition</label>
+                    <select name="condition" class="filter-select">
+                        <option value="">All Conditions</option>
+                        {% for cond_value, cond_label in all_conditions %}
+                            <option value="{{ cond_value }}" {% if cond_value == condition_filter %}selected{% endif %}>
+                                {{ cond_label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Price Range -->
+                <div class="filter-group filter-price-range">
+                    <label class="filter-label">Price Range</label>
+                    <div class="price-inputs">
+                        <input type="number" name="min_price" class="filter-input" 
+                               placeholder="Min" value="{{ min_price }}">
+                        <span class="price-separator">–</span>
+                        <input type="number" name="max_price" class="filter-input" 
+                               placeholder="Max" value="{{ max_price }}">
+                    </div>
+                </div>
+
+                <!-- Sort -->
+                <div class="filter-group">
+                    <label class="filter-label">Sort By</label>
+                    <select name="sort" class="filter-select" id="sortSelect">
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name: A-Z</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-row-actions">
+                <button type="submit" class="btn-filter-apply">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+                <a href="{% url 'core:shop' %}" class="btn-filter-reset">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </div>
+
+            <!-- Active Filters -->
+            {% if category_filter or condition_filter or min_price or max_price %}
+            <div class="active-filters">
+                {% if category_filter %}
+                <span class="filter-badge">
+                    <i class="fas fa-tag"></i> {{ category_filter|title }}
+                </span>
+                {% endif %}
+                {% if condition_filter %}
+                <span class="filter-badge">
+                    <i class="fas fa-info-circle"></i> {{ condition_filter|title }}
+                </span>
+                {% endif %}
+                {% if min_price or max_price %}
+                <span class="filter-badge">
+                    <i class="fas fa-money-bill-wave"></i> ${{ min_price|default:"0" }} - ${{ max_price|default:"∞" }}
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="shop-main-container">
+    <div class="container" style="max-width: 1400px;">
+        <!-- Shop Header -->
+        <div class="shop-header">
+            <div class="shop-header-content">
+                <h1 class="shop-title">Certified Products</h1>
+                <p class="shop-subtitle">Handpicked, verified, and ready to ship</p>
+                <div class="shop-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>{{ page_obj.paginator.count }} Verified Products</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>100% Buyer Protected</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-truck"></i>
+                        <span>Fast Shipping</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Info -->
+        {% if products %}
+        <div class="results-info">
+            <span class="results-text">
+                Showing <strong>{{ page_obj.start_index|default:0 }}-{{ page_obj.end_index|default:0 }}</strong> 
+                of <strong>{{ page_obj.paginator.count }}</strong> products
+            </span>
+        </div>
+        {% endif %}
+
+        <!-- Product Grid -->
+        {% if products %}
+            <div class="products-grid">
+                {% for product in products %}
+                    <div class="product-grid-item">
+                        {% include "components/product_card.html" %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <div class="shop-pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?{% if category_filter %}category={{ category_filter }}&{% endif %}{% if condition_filter %}condition={{ condition_filter }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&{% endif %}page=1" 
+                           class="pagination-btn pagination-edge" title="First page">
+                            <i class="fas fa-chevron-left"></i><i class="fas fa-chevron-left"></i>
+                        </a>
+                        <a href="?{% if category_filter %}category={{ category_filter }}&{% endif %}{% if condition_filter %}condition={{ condition_filter }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&{% endif %}page={{ page_obj.previous_page_number }}" 
+                           class="pagination-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="pagination-btn active">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?{% if category_filter %}category={{ category_filter }}&{% endif %}{% if condition_filter %}condition={{ condition_filter }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&{% endif %}page={{ num }}" 
+                               class="pagination-btn">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?{% if category_filter %}category={{ category_filter }}&{% endif %}{% if condition_filter %}condition={{ condition_filter }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&{% endif %}page={{ page_obj.next_page_number }}" 
+                           class="pagination-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <a href="?{% if category_filter %}category={{ category_filter }}&{% endif %}{% if condition_filter %}condition={{ condition_filter }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&{% endif %}page={{ page_obj.paginator.num_pages }}" 
+                           class="pagination-btn pagination-edge" title="Last page">
+                            <i class="fas fa-chevron-right"></i><i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>No Products Found</h3>
+                <p>Try adjusting your filters or browse all categories</p>
+                <a href="{% url 'core:shop' %}" class="btn-empty-reset">
+                    <i class="fas fa-redo"></i> Reset Filters
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* ===== FILTER SECTION ===== */
+.shop-filter-section {
+    position: sticky;
+    top: 70px;
+    z-index: 999;
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+    border-bottom: 1px solid rgba(20, 184, 166, 0.2);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem 0;
+}
+
+.shop-filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filter-row-primary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    flex: 1;
+    min-width: 400px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.filter-select,
+.filter-input {
+    padding: 0.7rem 1rem;
+    border: 1px solid rgba(20, 184, 166, 0.3);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.filter-select:hover,
+.filter-input:hover {
+    border-color: rgba(20, 184, 166, 0.6);
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.1);
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+    outline: none;
+}
+
+.filter-price-range {
+    flex: 1;
+}
+
+.price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.price-inputs .filter-input {
+    flex: 1;
+    min-width: 70px;
+}
+
+.price-separator {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.filter-row-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-filter-apply,
+.btn-filter-reset {
+    padding: 0.7rem 1.25rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.btn-filter-apply {
+    background: linear-gradient(135deg, #14b8a6, #06b6d4);
+    color: white;
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.2);
+}
+
+.btn-filter-apply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(20, 184, 166, 0.3);
+}
+
+.btn-filter-reset {
+    background: transparent;
+    color: #14b8a6;
+    border: 1px solid rgba(20, 184, 166, 0.3);
+}
+
+.btn-filter-reset:hover {
+    background: rgba(20, 184, 166, 0.1);
+    border-color: #14b8a6;
+}
+
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+.filter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(20, 184, 166, 0.15);
+    color: #14b8a6;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(20, 184, 166, 0.3);
+    animation: slideIn 0.3s ease-out;
+}
+
+.filter-badge i {
+    font-size: 0.8rem;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.shop-main-container {
+    background: var(--bg-primary);
+    min-height: calc(100vh - 70px);
+    padding: 3rem 0;
+}
+
+.shop-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+.shop-header-content {
+    background: linear-gradient(135deg, rgba(20, 184, 166, 0.05), rgba(6, 182, 212, 0.05));
+    border: 1px solid rgba(20, 184, 166, 0.1);
+    border-radius: 12px;
+    padding: 2.5rem;
+}
+
+.shop-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #14b8a6, #06b6d4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.shop-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.shop-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.stat-item i {
+    font-size: 1.5rem;
+    color: #14b8a6;
+}
+
+.stat-item span {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+/* ===== RESULTS INFO ===== */
+.results-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    background: rgba(20, 184, 166, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(20, 184, 166, 0.1);
+}
+
+.results-text {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.results-text strong {
+    color: #14b8a6;
+    font-weight: 700;
+}
+
+/* ===== PRODUCT GRID ===== */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.product-grid-item {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* ===== PAGINATION ===== */
+.shop-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(20, 184, 166, 0.1);
+    animation: fadeIn 0.6s ease-out;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(20, 184, 166, 0.3);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: #14b8a6;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination-btn:hover {
+    border-color: #14b8a6;
+    background: rgba(20, 184, 166, 0.1);
+    transform: translateY(-2px);
+}
+
+.pagination-btn.active {
+    background: linear-gradient(135deg, #14b8a6, #06b6d4);
+    color: white;
+    border-color: #14b8a6;
+    box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+.pagination-edge {
+    flex-shrink: 0;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(20, 184, 166, 0.05), rgba(6, 182, 212, 0.05));
+    border: 2px dashed rgba(20, 184, 166, 0.2);
+    border-radius: 12px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.empty-icon {
+    font-size: 3.5rem;
+    color: rgba(20, 184, 166, 0.3);
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.btn-empty-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    background: linear-gradient(135deg, #14b8a6, #06b6d4);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-empty-reset:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(20, 184, 166, 0.3);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+    .shop-title {
+        font-size: 2rem;
+    }
+
+    .filter-row-primary {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        min-width: 300px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .shop-filter-section {
+        padding: 1rem 0;
+    }
+
+    .shop-filter-form {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .filter-row-primary {
+        grid-template-columns: 1fr;
+        min-width: 100%;
+        width: 100%;
+    }
+
+    .filter-row-actions {
+        width: 100%;
+    }
+
+    .filter-row-actions button,
+    .filter-row-actions a {
+        flex: 1;
+    }
+
+    .shop-header-content {
+        padding: 1.5rem;
+    }
+
+    .shop-title {
+        font-size: 1.5rem;
+    }
+
+    .shop-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .shop-stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .results-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .shop-pagination {
+        gap: 0.25rem;
+    }
+
+    .pagination-btn {
+        min-width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .shop-title {
+        font-size: 1.25rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .shop-pagination {
+        gap: 0;
+    }
+
+    .pagination-btn {
+        min-width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+        padding: 0.3rem 0.5rem;
+    }
+
+    .pagination-btn i {
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateCartBadge(count) {
+        const badge = document.getElementById('cartCountBadge');
+        if (!badge) {
+            return;
+        }
+        const safeCount = Number.isFinite(count) ? count : 0;
+        badge.textContent = safeCount;
+        badge.style.display = safeCount > 0 ? 'inline-block' : 'none';
+    }
+
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '24px';
+        toast.style.right = '24px';
+        toast.style.padding = '12px 20px';
+        toast.style.borderRadius = '10px';
+        toast.style.zIndex = '9999';
+        toast.style.fontWeight = '600';
+        toast.style.fontSize = '0.9rem';
+        toast.style.color = '#0f172a';
+        toast.style.background = type === 'error' ? '#fecaca' : '#bbf7d0';
+        toast.style.boxShadow = '0 12px 30px rgba(15, 23, 42, 0.3)';
+        toast.style.animation = 'slideInRight 0.3s ease-out';
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+
+    // Add to Cart functionality
+    document.querySelectorAll('.js-add-to-cart').forEach((form) => {
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = form.querySelector('button[type="submit"]');
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: new FormData(form),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Request failed');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    updateCartBadge(parseInt(data.cart_count, 10));
+                    showToast('Product added to cart!', 'success');
+                    button.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    setTimeout(() => {
+                        button.innerHTML = originalHTML;
+                        button.disabled = false;
+                    }, 2000);
+                } else {
+                    showToast('Unable to add to cart.', 'error');
+                    button.innerHTML = originalHTML;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                showToast('Unable to add to cart.', 'error');
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+            }
+        });
+    });
+
+    // Auto-submit filter form when sort dropdown changes
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            const form = document.getElementById('filterForm');
+            if (form) {
+                form.submit();
+            }
+        });
+    }
+</script>
+
+<style>
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+</style>
+{% endblock %}
