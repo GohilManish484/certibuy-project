@@ -1,7 +1,10 @@
 from pathlib import Path
 import os
 
-import dj_database_url
+try:
+    import dj_database_url
+except Exception:
+    dj_database_url = None
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -123,7 +126,7 @@ DATABASES = {
     }
 }
 
-if os.environ.get("DATABASE_URL"):
+if dj_database_url and os.environ.get("DATABASE_URL"):
     DATABASES["default"] = dj_database_url.config(
         conn_max_age=600,
         ssl_require=True,
