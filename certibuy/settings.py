@@ -68,6 +68,7 @@ RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"]
+    CSRF_TRUSTED_ORIGINS = ["https://manishcertibuy.pythonanywhere.com"]
 
 INSTALLED_APPS = [
     "jazzmin",
@@ -224,7 +225,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
+os.makedirs(BASE_DIR / 'logs', exist_ok=True)
 # Logging Configuration
 LOGGING = {
     'version': 1,
