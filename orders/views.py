@@ -785,23 +785,57 @@ def cancel_order(request, order_id):
     if not order.can_cancel():
         messages.error(request, f'Cannot cancel order in {order.get_status_display()} status.')
         return redirect('orders:order_tracking', order_id=order_id)
+
+    cancellation_reason = request.POST.get('cancellation_reason', '').strip()
+    cancellation_details = request.POST.get('cancellation_details', '').strip()
+    valid_reasons = {
+        'changed_mind': 'I changed my mind',
+        'found_better_price': 'I found a better price elsewhere',
+        'ordered_by_mistake': 'I ordered by mistake',
+        'delivery_delay': 'Delivery is taking too long',
+        'other': 'Other reason',
+    }
+    if cancellation_reason not in valid_reasons:
+        messages.error(request, 'Please select a valid reason for cancelling this order.')
+        return redirect('orders:order_tracking', order_id=order_id)
+    if len(cancellation_details) < 10:
+        messages.error(request, 'Please provide at least 10 characters explaining your cancellation.')
+        return redirect('orders:order_tracking', order_id=order_id)
+    if len(cancellation_details) > 1000:
+        messages.error(request, 'Cancellation details must be 1000 characters or fewer.')
+        return redirect('orders:order_tracking', order_id=order_id)
     
     try:
         with transaction.atomic():
             order.status = 'cancelled'
             order.cancelled_at = timezone.now()
+            order.cancellation_reason = valid_reasons[cancellation_reason]
+            order.cancellation_details = cancellation_details
+            refund_pending = False
             
             if order.payment_method == 'online' and order.razorpay_payment_id:
-                razorpay_client = get_razorpay_client()
-                if razorpay_client:
-                    refund = razorpay_client.payment.refund(
-                        order.razorpay_payment_id,
-                        {'amount': int(order.total_amount * 100)}
+                try:
+                    razorpay_client = get_razorpay_client()
+                    if razorpay_client:
+                        refund = razorpay_client.payment.refund(
+                            order.razorpay_payment_id,
+                            {'amount': int(order.total_amount * 100)}
+                        )
+                        order.refund_id = refund['id']
+                        order.refund_status = refund['status']
+                        order.refund_amount = order.total_amount
+                        order.payment_status = 'refunded'
+                    else:
+                        refund_pending = True
+                except Exception as refund_error:
+                    refund_pending = True
+                    logger.exception(
+                        f"Refund initiation failed for cancelled order {order.id}: {refund_error}"
                     )
-                    order.refund_id = refund['id']
-                    order.refund_status = refund['status']
+
+                if refund_pending:
+                    order.refund_status = 'pending'
                     order.refund_amount = order.total_amount
-                    order.payment_status = 'refunded'
             
             order.save()
             
@@ -816,10 +850,26 @@ def cancel_order(request, order_id):
                 order=order,
                 status='cancelled',
                 updated_by=request.user,
-                notes=f"Cancelled by customer. Refund: {order.refund_id or 'N/A'}"
+                notes=(
+                    f"Cancelled by customer. Reason: {order.cancellation_reason}. "
+                    f"Details: {order.cancellation_details}. Refund: {order.refund_id or 'N/A'}"
+                )
             )
-            
-            messages.success(request, 'Order cancelled successfully.')
+
+            if order.refund_id:
+                messages.success(
+                    request,
+                    'Order cancelled successfully. Your payment refund will reach your bank account within 3-4 working days.'
+                )
+            elif refund_pending:
+                messages.success(
+                    request,
+                    'Order cancelled successfully. Your refund request is being processed and will reach your bank account within 3-4 working days.'
+                )
+            elif order.payment_method == 'cod':
+                messages.success(request, 'Order cancelled successfully. No payment refund is required for Cash on Delivery.')
+            else:
+                messages.success(request, 'Order cancelled successfully. Our team will process your refund within 3-4 working days.')
     
     except Exception as e:
         logger.error(f"Cancel order failed: {str(e)}")

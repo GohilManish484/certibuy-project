@@ -391,6 +391,46 @@
     color: #dc2626 !important;
 }
 
+.cancel-order-details summary {
+    list-style: none;
+}
+
+.cancel-order-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.cancel-order-form {
+    width: min(360px, 100%);
+    margin-top: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fff7f7;
+}
+
+.cancel-order-form label {
+    display: block;
+    margin: 0.65rem 0 0.35rem;
+    color: #7f1d1d;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.cancel-order-form select,
+.cancel-order-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 0.55rem;
+    font: inherit;
+}
+
+.cancel-order-form textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
 .order-timeline {
     margin-top: 1rem;
     padding-top: 1rem;
@@ -716,12 +756,28 @@
                                         <i class="fas fa-download"></i> Invoice
                                     </a>
                                     {% if order.can_cancel %}
-                                    <form method="post" action="{% url 'orders:cancel_order' order.id %}" onsubmit="return confirm('Cancel this order?');" style="display: inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="order-btn order-btn-danger">
+                                    <details class="cancel-order-details">
+                                        <summary class="order-btn order-btn-danger">
                                             <i class="fas fa-times"></i> Cancel Order
-                                        </button>
-                                    </form>
+                                        </summary>
+                                        <form method="post" action="{% url 'orders:cancel_order' order.id %}" class="cancel-order-form">
+                                            {% csrf_token %}
+                                            <label for="cancellation-reason-{{ order.id }}">Why are you cancelling this order?</label>
+                                            <select id="cancellation-reason-{{ order.id }}" name="cancellation_reason" required>
+                                                <option value="">Select a reason</option>
+                                                <option value="changed_mind">I changed my mind</option>
+                                                <option value="found_better_price">I found a better price elsewhere</option>
+                                                <option value="ordered_by_mistake">I ordered by mistake</option>
+                                                <option value="delivery_delay">Delivery is taking too long</option>
+                                                <option value="other">Other reason</option>
+                                            </select>
+                                            <label for="cancellation-details-{{ order.id }}">Please tell us more (at least 10 characters)</label>
+                                            <textarea id="cancellation-details-{{ order.id }}" name="cancellation_details" minlength="10" maxlength="1000" required></textarea>
+                                            <button type="submit" class="order-btn order-btn-danger">
+                                                Confirm Cancellation
+                                            </button>
+                                        </form>
+                                    </details>
                                     {% endif %}
                                     {% if order.can_request_refund %}
                                     <a href="{% url 'core:contact' %}" class="order-btn order-btn-outline">

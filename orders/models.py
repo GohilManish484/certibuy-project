@@ -106,6 +106,8 @@ class Order(models.Model):
     refund_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
     refund_status = models.CharField(max_length=20, blank=True, null=True)
     refund_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cancellation_reason = models.CharField(max_length=100, blank=True, null=True)
+    cancellation_details = models.TextField(blank=True, null=True)
     
     estimated_delivery = models.DateField(blank=True, null=True)
     shipped_at = models.DateTimeField(blank=True, null=True)

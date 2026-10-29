@@ -73,7 +73,7 @@
                                 <div style="padding: 0.5rem 0.75rem; background: #eff6ff; border-radius: 6px; color: #1e40af; font-size: 0.85rem; display: inline-flex; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
                                     <i class="fas fa-shield-alt"></i> 7-Day Testing Warranty
                                 </div>
-                                <p style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0.75rem 0;">${{ total_price }}</p>
+                                <p style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0.75rem 0;">₹{{ total_price }}</p>
                                 <p style="color: #64748b; font-size: 0.85rem; margin: 0.25rem 0;">
                                     <i class="fas fa-headset"></i> Support: support@certibuy.com
                                 </p>
@@ -88,9 +88,9 @@
                             <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0;">
                                 <div>
                                     <h3 style="font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">{{ item.product.name }}</h3>
-                                    <p style="color: #64748b; font-size: 0.9rem; margin: 0;">Qty {{ item.quantity }} × ${{ item.price }}</p>
+                                    <p style="color: #64748b; font-size: 0.9rem; margin: 0;">Qty {{ item.quantity }} × ₹{{ item.price }}</p>
                                 </div>
-                                <strong style="color: #1e293b; font-size: 1.1rem;">${{ item.total_price }}</strong>
+                                <strong style="color: #1e293b; font-size: 1.1rem;">₹{{ item.total_price }}</strong>
                             </div>
                             {% endfor %}
                         </div>
@@ -180,7 +180,7 @@
                     <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
                         <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 0.95rem;">
                             <span>Subtotal</span>
-                            <span>${{ total_price }}</span>
+                            <span>₹{{ total_price }}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 0.95rem;">
                             <span>Delivery</span>
@@ -192,7 +192,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; color: #1e293b; font-size: 1.1rem; font-weight: 700; padding-top: 0.75rem; margin-top: 0.5rem; border-top: 1px solid #e2e8f0;">
                             <span>Total Payable</span>
-                            <span>${{ total_price }}</span>
+                            <span>₹{{ total_price }}</span>
                         </div>
                     </div>
 

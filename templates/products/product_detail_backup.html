@@ -42,7 +42,7 @@
 
                 <div class="price-row">
                     <div class="price-block">
-                        <span class="price">${{ product.price|floatformat:2 }}</span>
+                        <span class="price">₹{{ product.price|floatformat:2 }}</span>
                         {% if product.discount_price %}
                             <span class="discount">Save {{ product.discount_price }}</span>
                         {% endif %}

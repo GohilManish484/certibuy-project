@@ -473,8 +473,9 @@
 
 /* Action Buttons */
 .premium-actions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 1rem;
     animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
 }
@@ -489,7 +490,8 @@
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     border: none;
-    width: 100%;
+    width: auto;
+    min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -523,14 +525,83 @@
 }
 
 .action-btn-continue {
-    background: linear-gradient(135deg, #16a34a, #22c55e);
-    color: white;
-    border: 2px solid transparent;
+    background: transparent;
+    color: #15803d;
+    border: 2px solid #86efac;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
 }
 
 .action-btn-continue:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+    background: #f0fdf4;
+    border-color: #16a34a;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(22, 163, 74, 0.15);
+}
+
+.cancel-order-dialog {
+    width: min(520px, calc(100% - 2rem));
+    border: 0;
+    border-radius: 18px;
+    padding: 0;
+    color: #1e293b;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25);
+}
+
+.cancel-order-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.48);
+    backdrop-filter: blur(3px);
+}
+
+.cancel-dialog-content {
+    padding: 1.75rem;
+    background: #ffffff;
+}
+
+.cancel-dialog-content h2 {
+    margin: 0 0 0.4rem;
+    color: #991b1b;
+    font-size: 1.35rem;
+}
+
+.cancel-dialog-content p {
+    margin: 0 0 1.25rem;
+    color: #64748b;
+}
+
+.cancel-dialog-content label {
+    display: block;
+    margin: 1rem 0 0.4rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.cancel-dialog-content select,
+.cancel-dialog-content textarea {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 0.75rem 0.85rem;
+    font: inherit;
+}
+
+.cancel-dialog-content textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.cancel-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.cancel-dialog-close {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #475569;
 }
 
 /* Animations */
@@ -627,7 +698,12 @@
     }
     
     .premium-actions-grid {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .premium-actions-grid .action-btn {
+        width: 100%;
     }
 }
 </style>
@@ -793,13 +869,10 @@
         <!-- Action Buttons -->
         <div class="premium-actions-grid">
             {% if order.can_cancel %}
-            <form method="post" action="{% url 'orders:cancel_order' order.id %}" onsubmit="return confirm('Are you sure you want to cancel this order?');">
-                {% csrf_token %}
-                <button type="submit" class="action-btn action-btn-cancel">
-                    <i class="fas fa-times-circle"></i>
-                    Cancel Order
-                </button>
-            </form>
+            <button type="button" class="action-btn action-btn-cancel" onclick="document.getElementById('cancel-order-dialog').showModal();">
+                <i class="fas fa-times-circle"></i>
+                Cancel Order
+            </button>
             {% endif %}
             
             {% if order.can_request_refund %}
@@ -814,6 +887,31 @@
                 Continue Shopping
             </a>
         </div>
+
+        {% if order.can_cancel %}
+        <dialog id="cancel-order-dialog" class="cancel-order-dialog">
+            <form method="post" action="{% url 'orders:cancel_order' order.id %}" class="cancel-dialog-content">
+                {% csrf_token %}
+                <h2>Cancel this order?</h2>
+                <p>Your feedback helps us improve. Please tell us why you want to cancel.</p>
+                <label for="cancellation-reason">Why are you cancelling this order?</label>
+                <select id="cancellation-reason" name="cancellation_reason" required>
+                    <option value="">Select a reason</option>
+                    <option value="changed_mind">I changed my mind</option>
+                    <option value="found_better_price">I found a better price elsewhere</option>
+                    <option value="ordered_by_mistake">I ordered by mistake</option>
+                    <option value="delivery_delay">Delivery is taking too long</option>
+                    <option value="other">Other reason</option>
+                </select>
+                <label for="cancellation-details">Please tell us more (at least 10 characters)</label>
+                <textarea id="cancellation-details" name="cancellation_details" minlength="10" maxlength="1000" required></textarea>
+                <div class="cancel-dialog-actions">
+                    <button type="button" class="action-btn cancel-dialog-close" onclick="this.closest('dialog').close();">Keep Order</button>
+                    <button type="submit" class="action-btn action-btn-cancel">Confirm Cancellation</button>
+                </div>
+            </form>
+        </dialog>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

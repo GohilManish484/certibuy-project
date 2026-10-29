@@ -9,7 +9,7 @@ from django.utils import timezone
 from datetime import date
 from products.models import Product
 from .utils import Cart
-from .models import Notification
+from .models import Notification, ContactMessage
 
 
 class HomeView(TemplateView):
@@ -22,6 +22,32 @@ class AboutView(TemplateView):
 
 class ContactView(TemplateView):
     template_name = "pages/contact.html"
+
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get("name", "").strip()
+        email = request.POST.get("email", "").strip()
+        subject = request.POST.get("subject", "").strip()
+        message_body = request.POST.get("message", "").strip()
+
+        if not all([name, email, subject, message_body]):
+            messages.error(request, "Please fill in all contact form fields.")
+            context = self.get_context_data(**kwargs)
+            context.update({
+                "form_name": name,
+                "form_email": email,
+                "form_subject": subject,
+                "form_message": message_body,
+            })
+            return self.render_to_response(context)
+
+        ContactMessage.objects.create(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message_body,
+        )
+        messages.success(request, "Your message has been received. We will get back to you shortly.")
+        return redirect("core:contact")
 
 
 class FAQView(TemplateView):

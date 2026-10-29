@@ -32,7 +32,7 @@
                         <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">{{ submission.product_name }}</h3>
                         <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                             <span style="color: var(--text-secondary);"><i class="fas fa-tag"></i> {{ submission.category }}</span>
-                            <span style="color: var(--text-secondary);"><i class="fas fa-dollar-sign"></i> {{ submission.expected_price }}</span>
+                            <span style="color: var(--text-secondary);"><i class="fas fa-indian-rupee-sign"></i> {{ submission.expected_price }}</span>
                             <span style="color: var(--text-secondary);"><i class="fas fa-clock"></i> {{ submission.created_at|date:"M d, Y" }}</span>
                         </div>
                         <p style="color: var(--text-secondary); line-height: 1.6;">{{ submission.description|truncatewords:30 }}</p>

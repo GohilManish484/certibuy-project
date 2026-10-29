@@ -722,7 +722,7 @@ body {
                     <h1 class="premium-product-title">{{ product.name }}</h1>
                     
                     <div class="premium-price-section">
-                        <div class="premium-price">${{ product.price|floatformat:2 }}</div>
+                        <div class="premium-price">₹{{ product.price|floatformat:2 }}</div>
                         <div class="premium-availability {% if product.certification_status != 'certified' %}out-stock{% endif %}">
                             {% if product.certification_status == 'certified' %}
                                 <i class="fas fa-check-circle"></i> In Stock
@@ -849,7 +849,7 @@ body {
                         
                         <div class="warranty-card" data-warranty="30-day">
                             <div class="warranty-duration">30-Day Premium</div>
-                            <div class="warranty-price">+$29.99</div>
+                            <div class="warranty-price">+₹29.99</div>
                             <ul class="warranty-features">
                                 <li>Extended testing period</li>
                                 <li>Priority support</li>
@@ -860,7 +860,7 @@ body {
                         
                         <div class="warranty-card" data-warranty="90-day">
                             <div class="warranty-duration">90-Day Elite</div>
-                            <div class="warranty-price">+$59.99</div>
+                            <div class="warranty-price">+₹59.99</div>
                             <ul class="warranty-features">
                                 <li>Maximum protection</li>
                                 <li>24/7 premium support</li>

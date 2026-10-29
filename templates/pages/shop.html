@@ -82,7 +82,7 @@
                 {% endif %}
                 {% if min_price or max_price %}
                 <span class="filter-badge">
-                    <i class="fas fa-money-bill-wave"></i> ${{ min_price|default:"0" }} - ${{ max_price|default:"∞" }}
+                    <i class="fas fa-money-bill-wave"></i> ₹{{ min_price|default:"0" }} - ₹{{ max_price|default:"∞" }}
                 </span>
                 {% endif %}
             </div>
